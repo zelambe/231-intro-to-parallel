@@ -72,7 +72,7 @@ public class SlicesTest {
 				expectedMin = slice.getMaxExclusive();
 			}
 			int expectedMax = expectedMin;
-			assertEquals(data.length, expectedMax);
+			assertEquals(expectedMax, data.length);
 		}
 	}
 

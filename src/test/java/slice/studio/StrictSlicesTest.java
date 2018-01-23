@@ -44,19 +44,19 @@ public class StrictSlicesTest {
 		Slice<Object[]> slice3 = slices.get(3);
 		Slice<Object[]> slice4 = slices.get(4);
 
-		assertEquals(slice0.getMinInclusive(), 0);
-		assertEquals(slice0.getMaxExclusive(), 101);
+		assertEquals(0, slice0.getMinInclusive());
+		assertEquals(101, slice0.getMaxExclusive());
 
-		assertEquals(slice1.getMinInclusive(), 101);
-		assertEquals(slice1.getMaxExclusive(), 202);
+		assertEquals(101, slice1.getMinInclusive());
+		assertEquals(202, slice1.getMaxExclusive());
 
-		assertEquals(slice2.getMinInclusive(), 202);
-		assertEquals(slice2.getMaxExclusive(), 302);
+		assertEquals(202, slice2.getMinInclusive());
+		assertEquals(302, slice2.getMaxExclusive());
 
-		assertEquals(slice3.getMinInclusive(), 302);
-		assertEquals(slice3.getMaxExclusive(), 402);
+		assertEquals(302, slice3.getMinInclusive());
+		assertEquals(402, slice3.getMaxExclusive());
 
-		assertEquals(slice4.getMinInclusive(), 402);
-		assertEquals(slice4.getMaxExclusive(), 502);
+		assertEquals(402, slice4.getMinInclusive());
+		assertEquals(502, slice4.getMaxExclusive());
 	}
 }
