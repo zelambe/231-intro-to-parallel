@@ -176,7 +176,6 @@ public class NucleobaseCounting {
 		for (int subSum:subSums) {
 			totalSum += subSum;
 		}
-		
 		return totalSum;
 	}
 
