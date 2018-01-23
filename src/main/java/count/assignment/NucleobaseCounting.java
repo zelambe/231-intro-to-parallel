@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.bioinformatics.Nucleobase;
+import edu.wustl.cse231s.util.IntegerRange;
 import midpoint.assignment.MidpointUtils;
 
 /**
@@ -61,7 +62,20 @@ public class NucleobaseCounting {
 	 *         given chromosome
 	 */
 	public static int countRangeSequential(byte[] chromosome, Nucleobase targetNucleobase, int min, int maxExclusive) {
-		throw new NotYetImplementedException();
+		//iterate through the array
+		//if current byte is equal to targetNucleobase then increase the count
+		// return the count when done
+
+		int count = 0;
+		
+		for(int i=0; i < chromosome.length; i++){
+			if (chromosome[i]== targetNucleobase.toByte()) {
+				count++;
+			}
+			else {
+			}
+		}
+	return count;
 	}
 
 	/**
@@ -79,7 +93,9 @@ public class NucleobaseCounting {
 	 *         given chromosome.
 	 */
 	public static int countSequential(byte[] chromosome, Nucleobase targetNucleobase) {
-		throw new NotYetImplementedException();
+	
+		//call the last method and use the array.length
+		return countRangeSequential(chromosome, targetNucleobase,0,chromosome.length);
 	}
 
 	/**
@@ -100,9 +116,22 @@ public class NucleobaseCounting {
 	 */
 	public static int countParallelLowerUpperSplit(byte[] chromosome, Nucleobase targetNucleobase)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
-	}
+		//calculate midpoint
+		// call on the count sequential method for each half
+		//when finished add the totals and return the count
 
+		int midpoint = MidpointUtils.calculateMidpoint(0, chromosome.length);
+		int[] subSums = {0,0};
+		finish(()->{
+			async(() -> {
+				subSums[0]=countRangeSequential(chromosome, targetNucleobase,0,midpoint);
+			});	
+				subSums[1]=countRangeSequential(chromosome, targetNucleobase,midpoint,chromosome.length);
+		});
+		
+		return subSums[0]+subSums[1];
+	}
+		
 	/**
 	 * This method should asynchronously count all of the instances of a specific
 	 * nucleobase, creating the given number of tasks. In other words, you should
@@ -126,7 +155,29 @@ public class NucleobaseCounting {
 	 */
 	public static int countParallelNWaySplit(byte[] chromosome, Nucleobase targetNucleobase, int numTasks)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int[] subSums = new int[numTasks];
+		
+		finish(()-> {
+			int min =0;
+			int slicelength =chromosome.length/numTasks;
+			for(int taskIndex: new IntegerRange(0,10)) {
+				int max = min + slicelength;
+				int _min = min;
+				async(()->{
+					for (int arrayIndex=_min; arrayIndex<max; arrayIndex++) {
+						subSums[taskIndex] = countRangeSequential(chromosome, targetNucleobase, _min,max);
+					}
+					});
+				min = max;
+				}
+			});
+		
+		int totalSum = 0;
+		for (int subSum:subSums) {
+			totalSum += subSum;
+		}
+		
+		return totalSum;
 	}
 
 	/**
