@@ -32,7 +32,8 @@ import midpoint.assignment.MidpointTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ CountRangeSequentialCorrectnessTest.class, CountSequentialCorrectnessTest.class,
 		IsolatedNucleobaseTest.class, MidpointTest.class, NWaySplitRemainderTest.class, LowerUpperTest.class,
-		NWaySplitTest.class, DivideAndConquerTest.class, ParallelismTest.class, NoPrintingTest.class })
+		NWaySplitTest.class, NWaySplitRemainderCeilingTest.class, DivideAndConquerTest.class, ParallelismTest.class,
+		NoPrintingTest.class })
 public class CountTestSuite {
 
 }
