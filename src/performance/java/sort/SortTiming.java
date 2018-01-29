@@ -39,9 +39,13 @@ import sort.studio.merge.MergeSort;
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class SortTiming {
+	private static String rightJustify(String s) {
+		return String.format("%48s", s);
+	}
+
 	private static void timeArraysSort(int[] original) {
 		int[] array = Arrays.copyOf(original, original.length);
-		ImmutableTimer timer = new ImmutableTimer("                  Arrays.sort");
+		ImmutableTimer timer = new ImmutableTimer(rightJustify("Arrays.sort"));
 		Arrays.sort(array);
 		long dt = timer.mark();
 		if (SortUtils.isInSortedOrder(array)) {
@@ -53,7 +57,7 @@ public class SortTiming {
 
 	private static void timeArraysParallelSort(int[] original) {
 		int[] array = Arrays.copyOf(original, original.length);
-		ImmutableTimer timer = new ImmutableTimer("          Arrays.parallelSort");
+		ImmutableTimer timer = new ImmutableTimer(rightJustify("Arrays.parallelSort"));
 		Arrays.parallelSort(array);
 		long dt = timer.mark();
 		if (SortUtils.isInSortedOrder(array)) {
@@ -67,7 +71,7 @@ public class SortTiming {
 			throws InterruptedException, ExecutionException {
 		try {
 			int[] array = Arrays.copyOf(original, original.length);
-			ImmutableTimer timer = new ImmutableTimer("MergeSort.sequentialMergesort");
+			ImmutableTimer timer = new ImmutableTimer(rightJustify("MergeSort.sequentialMergesort"));
 			MergeSort.sequentialMergeSort(array, combiner);
 			long dt = timer.mark();
 			if (SortUtils.isInSortedOrder(array)) {
@@ -82,9 +86,10 @@ public class SortTiming {
 
 	private static void timeParallelMergeSort(int[] original, int threshold, Combiner combiner)
 			throws InterruptedException, ExecutionException {
+		String combineText = combiner instanceof SequentialCombiner ? "sequential combiner" : "  parallel combiner";
 		try {
 			int[] array = Arrays.copyOf(original, original.length);
-			ImmutableTimer timer = new ImmutableTimer("  MergeSort.parallelMergesort");
+			ImmutableTimer timer = new ImmutableTimer(rightJustify("MergeSort.parallelMergesort(" + combineText + ")"));
 			MergeSort.parallelMergeSort(array, threshold, combiner);
 			long dt = timer.mark();
 			if (SortUtils.isInSortedOrder(array)) {
@@ -93,7 +98,7 @@ public class SortTiming {
 				throw new RuntimeException("result is not in sorted order");
 			}
 		} catch (NotYetImplementedException nyie) {
-			System.out.println("  MergeSort.parallelMergesort: NOT YET IMPLEMENTED");
+			System.out.println("MergeSort.parallelMergesort(" + combineText + "): NOT YET IMPLEMENTED");
 		}
 	}
 
