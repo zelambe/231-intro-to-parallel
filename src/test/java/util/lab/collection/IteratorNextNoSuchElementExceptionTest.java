@@ -32,11 +32,13 @@ import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
+import edu.wustl.cse231s.junit.JUnitUtils;
+
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class IteratorNextNoSuchElementExceptionTest {
-	@Test(expected = NoSuchElementException.class)
+	@Test(timeout = JUnitUtils.DEFAULT_TIMEOUT, expected = NoSuchElementException.class)
 	public void testNextForEmpty() {
 		Collection<Void> collection = new LinkedNodesCollection<>();
 		Iterator<Void> iterator = collection.iterator();
@@ -44,7 +46,7 @@ public class IteratorNextNoSuchElementExceptionTest {
 		iterator.next();
 	}
 
-	@Test(expected = NoSuchElementException.class)
+	@Test(timeout = JUnitUtils.DEFAULT_TIMEOUT, expected = NoSuchElementException.class)
 	public void testNextAtEnd() {
 		int value = 71;
 		Collection<Integer> collection = new LinkedNodesCollection<>();
