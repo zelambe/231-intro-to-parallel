@@ -24,6 +24,7 @@ package slice.studio;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
@@ -42,9 +43,9 @@ public class Slices {
 
 	/**
 	 * Should create a list of {@link Slice} objects of length numSlices. Each slice
-	 * in the returned result should be roughly data.length/numSlices in length. 
-	 * Any remaining data should be distributed one each to the front
-	 * slices. The sliceIndexId of each slice should be its index in the returned list.
+	 * in the returned result should be roughly data.length/numSlices in length. Any
+	 * remaining data should be distributed one each to the front slices. The
+	 * sliceIndexId of each slice should be its index in the returned list.
 	 * 
 	 * @param data
 	 *            the data to be broken up into a list of slices
@@ -53,7 +54,29 @@ public class Slices {
 	 * @return the created list of slices
 	 */
 	private static <T> List<Slice<T>> createNSlicesForArrayObject(T data, int numSlices) {
-		throw new NotYetImplementedException();
+		List<Slice<T>> sliceList = new LinkedList<Slice<T>>();
+		int arrayLength = Array.getLength(data);
+		int sliceLength = arrayLength / numSlices;
+		int remainder = arrayLength - (sliceLength * numSlices); 
+
+		int min = 0;
+		int maxExclusive = sliceLength;
+		
+		for (int i = 0; i < numSlices; i++) {
+			if (remainder > 0) {
+				Slice<T> newSlice = new Slice<T>(data, i, min, maxExclusive + 1);
+				remainder--;
+				sliceList.add(newSlice);
+				min = maxExclusive+1;
+				maxExclusive = min + sliceLength;
+			} else {
+				Slice<T> newSlice = new Slice<T>(data, i, min, maxExclusive);
+				sliceList.add(newSlice);
+				min = maxExclusive;
+				maxExclusive = min + sliceLength;
+			}
+		}
+		return sliceList;
 	}
 
 	public static <T> List<Slice<T[]>> createNSlices(T[] data, int numSlices) {

@@ -1,6 +1,6 @@
 Pledge
 ------
-
+Thanks to Dan the TA for telling me to keep track of each previous maxExclusive.
 
 Acknowledgments and Citations
 -----------------------------
