@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.iterators.LazyIteratorChain;
 
@@ -72,7 +73,11 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 * @return the index of the bucket the entry should go into
 	 */
 	private int hash(Object key) {
-		throw new NotYetImplementedException();
+		
+		int keyHash = key.hashCode();
+		int bucketIndex=Math.floorMod(keyHash, buckets.length);
+		
+		return bucketIndex;
 	}
 
 	/**
@@ -82,7 +87,8 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 * @return the bucket the key is in
 	 */
 	private Collection<Entry<K, V>> getBucketFor(Object key) {
-		throw new NotYetImplementedException();
+		int bucketIndex= hash(key);
+		return buckets[bucketIndex];
 	}
 
 	/**
@@ -90,7 +96,11 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		int size =0;
+			for(Collection<Entry<K, V>> bucket: buckets) {
+				size = size + bucket.size();
+			}
+		return size;
 	}
 
 	/**
@@ -98,7 +108,18 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V put(K key, V value) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K,V>> bucket =getBucketFor(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		while(mapIterator.hasNext()==true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				V oldValue = pair.getValue();
+				pair.setValue(value);
+				return oldValue;
+			}
+		}
+		bucket.add(new KeyMutableValuePair<>(key,value));
+		return null;
 	}
 
 	/**
@@ -106,7 +127,16 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V remove(Object key) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K,V>> bucket =getBucketFor(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				mapIterator.remove();
+				return pair.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -114,7 +144,16 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V get(Object key) {
-		throw new NotYetImplementedException();
+		Collection<Entry<K,V>> bucket =getBucketFor(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				return pair.getValue();
+			}
+		}
+		return null;
+
 	}
 
 	/**

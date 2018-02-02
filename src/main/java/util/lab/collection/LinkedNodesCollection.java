@@ -29,7 +29,7 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import net.jcip.annotations.NotThreadSafe;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Zahra Lambe
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
@@ -38,7 +38,7 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 
 	private final LinkedNode<E> head;
 	private int size;
-
+	
 	/**
 	 * A simple singly linked list which starts at size zero with a sentinel head
 	 * node. The sentinel node should always be maintained with a value of null,
@@ -57,7 +57,7 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 */
 	@Override
 	public Iterator<E> iterator() {
-		throw new NotYetImplementedException();
+		return new LinkedNodesIterator<E>(this);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		return this.size;
 	}
 
 	/**
@@ -74,8 +74,19 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	 * Inserts item at the front of the collection as {{@link Deque#offerFirst(Object)}.
 	 */
 	@Override
-	public boolean add(E item) {
-		throw new NotYetImplementedException();
+	public boolean add(E item) 
+			throws ClassCastException, NullPointerException, IllegalArgumentException{
+		//ask about the boolean part
+		if (item == null) {
+			return false;
+		}
+		else {
+			LinkedNode<E> prevNode = this.head.getNext();
+			LinkedNode <E>newNode = new LinkedNode<E>(item,prevNode);
+			this.head.setNext(newNode);
+			size++;
+			return true;	
+		}
 	}
 
 	/* package-private */ LinkedNode<E> getHeadNode() {
@@ -85,4 +96,6 @@ public class LinkedNodesCollection<E> extends AbstractCollection<E> {
 	/* package-private */ void decrementSize() {
 		this.size--;
 	}
+
+
 }

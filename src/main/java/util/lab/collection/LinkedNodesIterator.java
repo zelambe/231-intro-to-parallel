@@ -21,6 +21,7 @@
  ******************************************************************************/
 package util.lab.collection;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -28,15 +29,20 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import net.jcip.annotations.NotThreadSafe;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Zahra Lambe
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @NotThreadSafe
 /* package-private */ class LinkedNodesIterator<E> implements Iterator<E> {
+	private LinkedNode<E> previous;
+	private LinkedNode<E> current;
+	private LinkedNodesCollection<E> collection;
 
 	public LinkedNodesIterator(LinkedNodesCollection<E> collection) {
-		throw new NotYetImplementedException();
+		current= collection.getHeadNode();
+		previous= null;
+		this.collection= collection;
 	}
 
 	/**
@@ -44,22 +50,56 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public boolean hasNext() {
-		throw new NotYetImplementedException();
+		if(current.getNext()!=null) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public E next() {
-		throw new NotYetImplementedException();
+	public E next() throws NoSuchElementException{
+		if(hasNext()==true) {
+			previous = current;
+			current = current.getNext();
+			return current.getValue();
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove() {
-		throw new NotYetImplementedException();
+	public void remove() throws UnsupportedOperationException, IllegalStateException {
+		//if it tries to remove the sentinnel, throw unsupported operation exception?
+		//if remove has already been called, throw illegal state exception?
+		//otherwise, remove the current node and point the previous node to the next node
+		if(collection.size()>0) {
+			if(current==collection.getHeadNode()) {
+				throw new IllegalStateException();
+			}
+			else {
+				if(previous==current) {
+					throw new IllegalStateException();
+				}
+				else {
+					previous.setNext(current.getNext());
+					current = previous;
+					collection.decrementSize();
+				}
+			}
+		}
+		else {
+			throw new IllegalStateException();
+		}
+		
+		
 	}
 }

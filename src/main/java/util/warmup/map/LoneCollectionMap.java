@@ -25,6 +25,7 @@ import java.util.AbstractMap;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import edu.wustl.cse231s.NotYetImplementedException;
@@ -33,7 +34,7 @@ import net.jcip.annotations.NotThreadSafe;
 import util.lab.collection.LinkedNodesCollection;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Zahra Lambe
  * @author Ben Choi (benjaminchoi@wustl.edu)
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
@@ -50,6 +51,7 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	public LoneCollectionMap() {
 		entries = new LinkedNodesCollection<>();
+
 	}
 
 	/**
@@ -57,7 +59,7 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public int size() {
-		throw new NotYetImplementedException();
+		return this.entries.size();
 	}
 
 	/**
@@ -65,15 +67,33 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V put(K key, V value) {
-		throw new NotYetImplementedException();
+		Iterator<Entry<K, V>> mapIterator = entries.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				V oldValue = pair.getValue();
+				pair.setValue(value);
+				return oldValue;
+			}
+		}
+		entries.add(new KeyMutableValuePair<>(key, value));
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public V remove(Object key) {
-		throw new NotYetImplementedException();
+	public V remove(Object key) throws UnsupportedOperationException {
+		Iterator<Entry<K, V>> mapIterator = entries.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				mapIterator.remove();
+				return pair.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -81,7 +101,14 @@ public class LoneCollectionMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public V get(Object key) {
-		throw new NotYetImplementedException();
+		Iterator<Entry<K, V>> mapIterator = entries.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				return pair.getValue();
+			}
+		}
+		return null;
 	}
 
 	/**
