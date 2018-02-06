@@ -27,6 +27,7 @@ import static edu.wustl.cse231s.v5.V5.finish;
 import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import midpoint.assignment.MidpointUtils;
 import sort.core.merge.Combiner;
 
 /**
@@ -49,7 +50,41 @@ public class MergeSort {
 	 */
 	private static void sequentialMergeSortKernel(int[] data, int lowInclusive, int highExclusive, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int midpoint = MidpointUtils.calculateMidpoint(lowInclusive, highExclusive);
+		if (highExclusive - lowInclusive != 1) {
+
+			sequentialMergeSortKernel(data, lowInclusive, midpoint, combiner);
+			sequentialMergeSortKernel(data, midpoint, highExclusive, combiner);
+
+			// merging
+			// int[] temp = new int[data.length];
+			//
+			// int left = lowInclusive;
+			// int right = midpoint;
+			// int index = lowInclusive;
+			//
+			// while (left < midpoint && right < highExclusive) {
+			// if (data[left] <= data[right]) {
+			// temp[index]= data[left];
+			// }
+			// else {
+			// temp[index]= data[right];
+			// }
+			// index++;
+			// }
+			//
+			// while(left<midpoint) {
+			// temp[index++]= data[left++];
+			// }
+			//
+			// while(right<highExclusive) {
+			// temp[index++] = data[right++];
+			// }
+			// System.arraycopy(temp, lowInclusive, data, lowInclusive, highExclusive-1);
+		}
+
+		combiner.combineRange(data, lowInclusive, midpoint, highExclusive);
+
 	}
 
 	/**
@@ -62,7 +97,8 @@ public class MergeSort {
 	 */
 	public static void sequentialMergeSort(int[] data, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		sequentialMergeSortKernel(data, 0, data.length, combiner);
+
 	}
 
 	/**
@@ -86,7 +122,18 @@ public class MergeSort {
 	 */
 	private static void parallelMergeSortKernel(int[] data, int lowInclusive, int highExclusive, int threshold,
 			Combiner combiner) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int midpoint = MidpointUtils.calculateMidpoint(lowInclusive, highExclusive);
+		if (highExclusive - lowInclusive > threshold) {
+			finish (() ->{
+				async(() -> {
+					sequentialMergeSortKernel(data, lowInclusive, midpoint, combiner);
+				});
+				async(() -> {
+					sequentialMergeSortKernel(data, midpoint, highExclusive, combiner);
+				});
+			});
+		}
+		combiner.combineRange(data, lowInclusive, midpoint, highExclusive);
 	}
 
 	/**
@@ -102,6 +149,6 @@ public class MergeSort {
 	 */
 	public static void parallelMergeSort(int[] data, int threshold, Combiner combiner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		parallelMergeSortKernel(data,0,data.length,threshold,combiner);
 	}
 }

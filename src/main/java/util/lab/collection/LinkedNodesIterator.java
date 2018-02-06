@@ -63,13 +63,13 @@ import net.jcip.annotations.NotThreadSafe;
 	 */
 	@Override
 	public E next() throws NoSuchElementException{
-		if(hasNext()==true) {
+		if(hasNext()) {
 			previous = current;
 			current = current.getNext();
 			return current.getValue();
 		}
 		else {
-			return null;
+			throw new NoSuchElementException();
 		}
 	}
 

@@ -43,8 +43,8 @@ import util.lab.collection.LinkedNodesCollection;
  */
 @NotThreadSafe
 public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
-
 	private final Collection<Entry<K, V>>[] buckets;
+	private int size;
 
 	/**
 	 * A simple HashMap which extends the simple map you implemented earlier. This
@@ -96,11 +96,7 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 	 */
 	@Override
 	public int size() {
-		int size =0;
-			for(Collection<Entry<K, V>> bucket: buckets) {
-				size = size + bucket.size();
-			}
-		return size;
+		return this.size;
 	}
 
 	/**
@@ -119,6 +115,7 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 			}
 		}
 		bucket.add(new KeyMutableValuePair<>(key,value));
+		this.size++;
 		return null;
 	}
 
@@ -133,6 +130,7 @@ public class BucketsHashMap<K, V> extends AbstractMap<K, V> {
 			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
 			if (pair.getKey().equals(key)) {
 				mapIterator.remove();
+				this.size--;
 				return pair.getValue();
 			}
 		}

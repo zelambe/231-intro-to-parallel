@@ -1,5 +1,6 @@
 Pledge
 ------
+Thanks to Dan Evans for helping me understand the lab. I was trying to combine it when I could've just used the combiner.
 
 
 Acknowledgments and Citations
