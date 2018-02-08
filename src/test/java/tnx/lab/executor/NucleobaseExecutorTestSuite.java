@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -28,7 +28,8 @@ import org.junit.runners.Suite;
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ QuicksortSequentialTest.class, QuicksortParallelTest.class,
-		QuicksortSuitableForDebuggingTest.class })
-public class QuicksortExecutorTestSuite {
+@Suite.SuiteClasses({ NucleobaseCountLowerUpperSplitTest.class,
+		NucleobaseCountNWayParallelCorrectnessTest.class,
+		NucleobaseCountDivideAndConquerParallelCorrectnessTest.class })
+public class NucleobaseExecutorTestSuite {
 }

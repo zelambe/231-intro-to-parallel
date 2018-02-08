@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.thread;
+package tnx.lab.thread;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,8 +34,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import edu.wustl.cse231s.sleep.SleepUtils;
-import tnx.assignment.rubric.TnXRubric;
-import tnx.assignment.thread.TAgeSum;
+import tnx.lab.rubric.TnXRubric;
+import tnx.lab.thread.TAgeSum;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)

@@ -19,12 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -34,52 +34,41 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.wustl.cse231s.bioinformatics.Nucleobase;
-import tnx.assignment.rubric.TnXRubric;
+import edu.wustl.cse231s.junit.JUnitUtils;
+import tnx.lab.executor.XNucleobaseCounting;
+import tnx.lab.rubric.TnXRubric;
 
 /**
  * @author Finn Voichick
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  * 
- *         {@link XNucleobaseCounting#countNWaySplit(ExecutorService, byte[], Nucleobase, int)}.
+ *         {@link XNucleobaseCounting#countLowerUpperSplit(ExecutorService, byte[], Nucleobase)}.
  */
 @RunWith(Parameterized.class)
-@TnXRubric(TnXRubric.Category.EXECUTOR_COUNT_NWAY)
-public class NucleobaseCountNWayParallelCorrectnessTest extends AbstractNucleobaseTest {
-	private final int nWaySplitCount;
-
-	public NucleobaseCountNWayParallelCorrectnessTest(Nucleobase nucleobase, int nWaySplitCount) throws IOException {
+@TnXRubric(TnXRubric.Category.EXECUTOR_COUNT_2WAY)
+public class NucleobaseCountLowerUpperSplitTest extends AbstractNucleobaseTest {
+	public NucleobaseCountLowerUpperSplitTest(Nucleobase nucleobase) throws IOException {
 		super(nucleobase);
-		this.nWaySplitCount = nWaySplitCount;
 	}
 
 	@Override
 	protected List<Integer> getAcceptableSubmitCounts() {
-		return Arrays.asList(0);
+		return Arrays.asList(1, 2);
 	}
 
 	@Override
 	protected List<Integer> getInvokeAllSizes() {
-		return Arrays.asList(this.nWaySplitCount);
+		return Collections.emptyList();
 	}
 
 	@Override
 	protected int count(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase)
 			throws InterruptedException, ExecutionException {
-		return XNucleobaseCounting.countNWaySplit(executor, chromosome, nucleobase, this.nWaySplitCount);
+		return XNucleobaseCounting.countLowerUpperSplit(executor, chromosome, nucleobase);
 	}
 
-	@Parameters(name = "{0}, nway={1}")
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> getConstructorArguments() {
-		int n = Runtime.getRuntime().availableProcessors();
-
-		int[] nWays = { n, n * 2, n * 7 };
-
-		List<Object[]> list = new LinkedList<>();
-		for (Nucleobase nucleobase : Nucleobase.values()) {
-			for (int nWay : nWays) {
-				list.add(new Object[] { nucleobase, nWay });
-			}
-		}
-		return list;
+		return JUnitUtils.toParameterizedArguments(Nucleobase.values());
 	}
 }

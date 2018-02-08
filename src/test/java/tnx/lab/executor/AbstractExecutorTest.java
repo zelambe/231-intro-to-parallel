@@ -19,19 +19,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment;
+package tnx.lab.executor;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeoutException;
 
-import tnx.assignment.executor.NucleobaseExecutorTestSuite;
-import tnx.assignment.executor.QuicksortExecutorTestSuite;
-import tnx.assignment.thread.ThreadsTestSuite;
+import org.junit.Test;
+
+import edu.wustl.cse231s.executors.BookkeepingExecutorService;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ ThreadsTestSuite.class, NucleobaseExecutorTestSuite.class, QuicksortExecutorTestSuite.class })
-public class ThreadsAndExecutorsTestSuite {
+public abstract class AbstractExecutorTest {
+	protected abstract void accept(BookkeepingExecutorService executor)
+			throws InterruptedException, ExecutionException;
+
+	protected abstract List<Integer> getAcceptableSubmitCounts();
+
+	protected abstract List<Integer> getInvokeAllSizes();
+
+	protected ExecutorService executor() {
+		return ForkJoinPool.commonPool();
+	}
+
+	protected void shutdownIfAppropriate(ExecutorService executorService) {
+	}
+
+	@Test
+	public void test() throws InterruptedException, ExecutionException, TimeoutException {
+		List<Integer> acceptableSubmitCounts = getAcceptableSubmitCounts();
+		List<Integer> invokeAllSizes = getInvokeAllSizes();
+
+		int submitLimit = Collections.max(acceptableSubmitCounts);
+
+		BookkeepingExecutorService executor = new BookkeepingExecutorService.Builder(executor(), submitLimit, invokeAllSizes.size()).build();
+		try {
+			accept(executor);
+		} finally {
+			shutdownIfAppropriate(executor);
+		}
+	}
 }

@@ -1,4 +1,4 @@
-package tnx.assignment.executor;
+package tnx.lab.executor;
 /*******************************************************************************
  * Copyright (C) 2016-2017 Dennis Cosgrove
  * 
@@ -30,6 +30,7 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.bioinformatics.Nucleobase;
 import edu.wustl.cse231s.bioinformatics.io.resource.ChromosomeResource;
 import edu.wustl.cse231s.timing.ImmutableTimer;
+import tnx.lab.executor.XNucleobaseCounting;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)

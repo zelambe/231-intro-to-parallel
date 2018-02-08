@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
 import java.util.Collection;
 import java.util.LinkedList;

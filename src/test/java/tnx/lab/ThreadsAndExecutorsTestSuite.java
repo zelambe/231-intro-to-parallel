@@ -19,26 +19,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.rubric;
+package tnx.lab;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+import tnx.lab.executor.NucleobaseExecutorTestSuite;
+import tnx.lab.executor.QuicksortExecutorTestSuite;
+import tnx.lab.thread.ThreadsTestSuite;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface TnXRubric {
-	public static enum Category {
-		THREAD_NEW,
-		THREAD_UPPER_LOWER,
-		
-		EXECUTOR_COUNT_2WAY,
-		EXECUTOR_COUNT_NWAY,
-		EXECUTOR_COUNT_DIVIDE_AND_CONQUER,
-		
-		SEQUENTIAL_QUICKSORT,
-		EXECUTOR_QUICKSORT,
-	}
-	Category[] value();
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ ThreadsTestSuite.class, NucleobaseExecutorTestSuite.class, QuicksortExecutorTestSuite.class })
+public class ThreadsAndExecutorsTestSuite {
 }

@@ -1,4 +1,4 @@
-package tnx.assignment.executor;
+package tnx.lab.executor;
 /*******************************************************************************
  * Copyright (C) 2016-2017 Dennis Cosgrove
  * 
@@ -31,6 +31,7 @@ import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.timing.ImmutableTimer;
 import sort.core.quick.Partitioner;
 import sort.core.quick.SequentialPartitioner;
+import tnx.lab.executor.XQuicksort;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)

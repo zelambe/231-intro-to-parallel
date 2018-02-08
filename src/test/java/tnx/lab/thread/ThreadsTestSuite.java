@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.thread;
+package tnx.lab.thread;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

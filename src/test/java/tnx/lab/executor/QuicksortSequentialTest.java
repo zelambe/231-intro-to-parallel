@@ -19,56 +19,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import sort.core.RandomDataUtils;
 import sort.core.quick.SequentialPartitioner;
-import tnx.assignment.rubric.TnXRubric;
+import tnx.lab.executor.XQuicksort;
+import tnx.lab.rubric.TnXRubric;
 
 /**
- * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  * @author Finn Voichick
+ * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  * 
- *         {@link XQuicksort}
+ *         {@link XQuicksort#sequentialQuicksort(int[], sort.core.quick.Partitioner)}
  */
-public final class QuicksortSuitableForDebuggingTest {
-	private final int[] original;
-	private final int[] sorted;
+@RunWith(Parameterized.class)
+@TnXRubric(TnXRubric.Category.SEQUENTIAL_QUICKSORT)
+public class QuicksortSequentialTest {
+	private final int length;
 
-	public QuicksortSuitableForDebuggingTest() {
-		this.original = new int[] { 3, 8, 2, 5, 1, 7, 4, 6 };
-		this.sorted = Arrays.copyOf(this.original, this.original.length);
-		Arrays.parallelSort(sorted);
+	public QuicksortSequentialTest(int length) {
+		this.length = length;
 	}
 
 	@Test
-	@TnXRubric(TnXRubric.Category.SEQUENTIAL_QUICKSORT)
-	public void testSequential() throws InterruptedException, ExecutionException {
-		int[] array = Arrays.copyOf(this.original, this.original.length);
+	public void test() throws InterruptedException, ExecutionException {
+		int[] array = RandomDataUtils.createRandomData(this.length, System.currentTimeMillis());
+		int[] sorted = Arrays.copyOf(array, array.length);
+		Arrays.sort(sorted);
+
 		XQuicksort.sequentialQuicksort(array, new SequentialPartitioner());
-		Assert.assertArrayEquals(sorted, array);
+		Assert.assertArrayEquals("Array must be sorted", sorted, array);
 	}
 
-	@Test
-	@TnXRubric(TnXRubric.Category.EXECUTOR_QUICKSORT)
-	public void testParallel() throws InterruptedException, ExecutionException {
-		int[] array = Arrays.copyOf(this.original, this.original.length);
-		int threshold = 3;
-
-		ExecutorService executorService = Executors.newWorkStealingPool();
-		try {
-			XQuicksort.parallelQuicksort(executorService, array, threshold, new SequentialPartitioner());
-			Assert.assertArrayEquals(sorted, array);
-		} finally {
-			executorService.shutdown();
-		}
-
+	@Parameters(name = "length={0}")
+	public static Collection<Object[]> getConstructorArguments() {
+		List<Object[]> result = new LinkedList<>();
+		result.add(new Object[] { 24 });
+		result.add(new Object[] { 10_000 });
+		return result;
 	}
 }

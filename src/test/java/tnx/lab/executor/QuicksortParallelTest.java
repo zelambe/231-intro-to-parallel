@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -47,7 +47,8 @@ import sort.core.RandomDataUtils;
 import sort.core.SortUtils;
 import sort.core.quick.PivotInitialIndexSelector;
 import sort.core.quick.SequentialPartitioner;
-import tnx.assignment.rubric.TnXRubric;
+import tnx.lab.executor.XQuicksort;
+import tnx.lab.rubric.TnXRubric;
 
 /**
  * @author Finn Voichick

@@ -19,49 +19,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.thread;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import edu.wustl.cse231s.executors.BookkeepingExecutorService;
+import tnx.lab.rubric.TnXRubric;
+import tnx.lab.thread.SimpleThreadFactory;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-public abstract class AbstractExecutorTest {
-	protected abstract void accept(BookkeepingExecutorService executor)
-			throws InterruptedException, ExecutionException;
-
-	protected abstract List<Integer> getAcceptableSubmitCounts();
-
-	protected abstract List<Integer> getInvokeAllSizes();
-
-	protected ExecutorService executor() {
-		return ForkJoinPool.commonPool();
-	}
-
-	protected void shutdownIfAppropriate(ExecutorService executorService) {
-	}
-
+@TnXRubric(TnXRubric.Category.THREAD_NEW)
+public class SimpleThreadFactoryTest {
 	@Test
-	public void test() throws InterruptedException, ExecutionException, TimeoutException {
-		List<Integer> acceptableSubmitCounts = getAcceptableSubmitCounts();
-		List<Integer> invokeAllSizes = getInvokeAllSizes();
+	public void test() throws InterruptedException {
+		ThreadFactory threadFactory = new SimpleThreadFactory();
 
-		int submitLimit = Collections.max(acceptableSubmitCounts);
+		AtomicBoolean isTargetRun = new AtomicBoolean(false);
+		Runnable target = () -> {
+			isTargetRun.set(true);
+		};
 
-		BookkeepingExecutorService executor = new BookkeepingExecutorService.Builder(executor(), submitLimit, invokeAllSizes.size()).build();
-		try {
-			accept(executor);
-		} finally {
-			shutdownIfAppropriate(executor);
-		}
+		Thread thread = threadFactory.newThread(target);
+		Assert.assertNotNull(thread);
+		Assert.assertEquals("Do NOT start newly created threads.  ThreadState: ", Thread.State.NEW, thread.getState());
+
+		Assert.assertFalse("Do NOT run newly created threads.", isTargetRun.get());
+		thread.run();
+		Assert.assertTrue(isTargetRun.get());
+
+		isTargetRun.set(false);
+		thread.start();
+		thread.join();
+		Assert.assertTrue(isTargetRun.get());
 	}
 }

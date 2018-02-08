@@ -19,36 +19,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package sort.fun.quick;
+package tnx.lab.executor;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import sort.core.RandomDataUtils;
+import sort.core.quick.SequentialPartitioner;
 import tnx.lab.executor.XQuicksort;
+import tnx.lab.rubric.TnXRubric;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
+ * @author Finn Voichick
  * 
- *         {@link ParallelPartitioner#partitionRange(int[], int, int)}
+ *         {@link XQuicksort}
  */
-public class ParallelPartitionerTest {
+public final class QuicksortSuitableForDebuggingTest {
+	private final int[] original;
+	private final int[] sorted;
+
+	public QuicksortSuitableForDebuggingTest() {
+		this.original = new int[] { 3, 8, 2, 5, 1, 7, 4, 6 };
+		this.sorted = Arrays.copyOf(this.original, this.original.length);
+		Arrays.parallelSort(sorted);
+	}
+
 	@Test
-	public void test() throws InterruptedException, ExecutionException {
-		int[] array = RandomDataUtils.createRandomData(100_000, System.currentTimeMillis());
-		int[] sorted = Arrays.copyOf(array, array.length);
-		Arrays.sort(sorted);
+	@TnXRubric(TnXRubric.Category.SEQUENTIAL_QUICKSORT)
+	public void testSequential() throws InterruptedException, ExecutionException {
+		int[] array = Arrays.copyOf(this.original, this.original.length);
+		XQuicksort.sequentialQuicksort(array, new SequentialPartitioner());
+		Assert.assertArrayEquals(sorted, array);
+	}
 
-		int threshold = array.length / 11;
-		int partitionThreshold = threshold * 2;
-		ExecutorService executor = ForkJoinPool.commonPool();
+	@Test
+	@TnXRubric(TnXRubric.Category.EXECUTOR_QUICKSORT)
+	public void testParallel() throws InterruptedException, ExecutionException {
+		int[] array = Arrays.copyOf(this.original, this.original.length);
+		int threshold = 3;
 
-		XQuicksort.parallelQuicksort(executor, array, threshold, new ParallelPartitioner(executor, partitionThreshold));
-		Assert.assertArrayEquals("Array must be sorted", sorted, array);
+		ExecutorService executorService = Executors.newWorkStealingPool();
+		try {
+			XQuicksort.parallelQuicksort(executorService, array, threshold, new SequentialPartitioner());
+			Assert.assertArrayEquals(sorted, array);
+		} finally {
+			executorService.shutdown();
+		}
+
 	}
 }

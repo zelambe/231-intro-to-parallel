@@ -19,54 +19,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.executor;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import sort.core.RandomDataUtils;
-import sort.core.quick.SequentialPartitioner;
-import tnx.assignment.rubric.TnXRubric;
+import edu.wustl.cse231s.bioinformatics.Nucleobase;
+import tnx.lab.executor.XNucleobaseCounting;
+import tnx.lab.rubric.TnXRubric;
 
 /**
  * @author Finn Voichick
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  * 
- *         {@link XQuicksort#sequentialQuicksort(int[], sort.core.quick.Partitioner)}
+ *         {@link XNucleobaseCounting#countNWaySplit(ExecutorService, byte[], Nucleobase, int)}.
  */
 @RunWith(Parameterized.class)
-@TnXRubric(TnXRubric.Category.SEQUENTIAL_QUICKSORT)
-public class QuicksortSequentialTest {
-	private final int length;
+@TnXRubric(TnXRubric.Category.EXECUTOR_COUNT_NWAY)
+public class NucleobaseCountNWayParallelCorrectnessTest extends AbstractNucleobaseTest {
+	private final int nWaySplitCount;
 
-	public QuicksortSequentialTest(int length) {
-		this.length = length;
+	public NucleobaseCountNWayParallelCorrectnessTest(Nucleobase nucleobase, int nWaySplitCount) throws IOException {
+		super(nucleobase);
+		this.nWaySplitCount = nWaySplitCount;
 	}
 
-	@Test
-	public void test() throws InterruptedException, ExecutionException {
-		int[] array = RandomDataUtils.createRandomData(this.length, System.currentTimeMillis());
-		int[] sorted = Arrays.copyOf(array, array.length);
-		Arrays.sort(sorted);
-
-		XQuicksort.sequentialQuicksort(array, new SequentialPartitioner());
-		Assert.assertArrayEquals("Array must be sorted", sorted, array);
+	@Override
+	protected List<Integer> getAcceptableSubmitCounts() {
+		return Arrays.asList(0);
 	}
 
-	@Parameters(name = "length={0}")
+	@Override
+	protected List<Integer> getInvokeAllSizes() {
+		return Arrays.asList(this.nWaySplitCount);
+	}
+
+	@Override
+	protected int count(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase)
+			throws InterruptedException, ExecutionException {
+		return XNucleobaseCounting.countNWaySplit(executor, chromosome, nucleobase, this.nWaySplitCount);
+	}
+
+	@Parameters(name = "{0}, nway={1}")
 	public static Collection<Object[]> getConstructorArguments() {
-		List<Object[]> result = new LinkedList<>();
-		result.add(new Object[] { 24 });
-		result.add(new Object[] { 10_000 });
-		return result;
+		int n = Runtime.getRuntime().availableProcessors();
+
+		int[] nWays = { n, n * 2, n * 7 };
+
+		List<Object[]> list = new LinkedList<>();
+		for (Nucleobase nucleobase : Nucleobase.values()) {
+			for (int nWay : nWays) {
+				list.add(new Object[] { nucleobase, nWay });
+			}
+		}
+		return list;
 	}
 }

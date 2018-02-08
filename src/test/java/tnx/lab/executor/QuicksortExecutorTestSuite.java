@@ -19,39 +19,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.thread;
+package tnx.lab.executor;
 
-import java.util.concurrent.ThreadFactory;
-
-import edu.wustl.cse231s.NotYetImplementedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * An parallel array sum implementation that uses Java's {@link Thread} class to
- * sum each half of the array individually.
- * 
- * @author __STUDENT_NAME__
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-public class TAgeSum {
-
-	/**
-	 * Should sum an array of ages. You are given an array of ages, and should
-	 * calculate the sum of everything in the array. This should be done in
-	 * parallel, calculating the sum of the lower half and the upper half
-	 * individually, then summing those two partial sums. Like with the first
-	 * nucleobase counting assignment, you will need to create an array to store the
-	 * sub-sums.
-	 * 
-	 * @param ages
-	 *            an array of people's ages
-	 * @param threadFactory
-	 *            an object used for creating {@code Thread}s
-	 * @return the sum of every age in the array
-	 * @throws InterruptedException
-	 *             if the current thread was interrupted while waiting
-	 */
-	public static int sumUpperLowerSplit(int[] ages, ThreadFactory threadFactory) throws InterruptedException {
-		throw new NotYetImplementedException();
-	}
-
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ QuicksortSequentialTest.class, QuicksortParallelTest.class,
+		QuicksortSuitableForDebuggingTest.class })
+public class QuicksortExecutorTestSuite {
 }

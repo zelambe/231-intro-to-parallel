@@ -19,41 +19,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.thread;
+package tnx.lab.rubric;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import tnx.assignment.rubric.TnXRubric;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@TnXRubric(TnXRubric.Category.THREAD_NEW)
-public class SimpleThreadFactoryTest {
-	@Test
-	public void test() throws InterruptedException {
-		ThreadFactory threadFactory = new SimpleThreadFactory();
-
-		AtomicBoolean isTargetRun = new AtomicBoolean(false);
-		Runnable target = () -> {
-			isTargetRun.set(true);
-		};
-
-		Thread thread = threadFactory.newThread(target);
-		Assert.assertNotNull(thread);
-		Assert.assertEquals("Do NOT start newly created threads.  ThreadState: ", Thread.State.NEW, thread.getState());
-
-		Assert.assertFalse("Do NOT run newly created threads.", isTargetRun.get());
-		thread.run();
-		Assert.assertTrue(isTargetRun.get());
-
-		isTargetRun.set(false);
-		thread.start();
-		thread.join();
-		Assert.assertTrue(isTargetRun.get());
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TnXRubric {
+	public static enum Category {
+		THREAD_NEW,
+		THREAD_UPPER_LOWER,
+		
+		EXECUTOR_COUNT_2WAY,
+		EXECUTOR_COUNT_NWAY,
+		EXECUTOR_COUNT_DIVIDE_AND_CONQUER,
+		
+		SEQUENTIAL_QUICKSORT,
+		EXECUTOR_QUICKSORT,
 	}
+	Category[] value();
 }

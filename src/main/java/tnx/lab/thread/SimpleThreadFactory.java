@@ -19,17 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.executor;
+package tnx.lab.thread;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.concurrent.ThreadFactory;
+
+import edu.wustl.cse231s.NotYetImplementedException;
 
 /**
+ * The simplest {@code ThreadFactory} imaginable. This class exists just so that
+ * you understand what a {@code ThreadFactory} is, and so that you understand
+ * what code would be necessary for you to write if you aren't given a
+ * ThreadFactory.
+ * 
+ * @author __STUDENT_NAME__
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NucleobaseCountLowerUpperSplitTest.class,
-		NucleobaseCountNWayParallelCorrectnessTest.class,
-		NucleobaseCountDivideAndConquerParallelCorrectnessTest.class })
-public class NucleobaseExecutorTestSuite {
+public class SimpleThreadFactory implements ThreadFactory {
+
+	/**
+	 * Should construct a new {@code Thread}. This thread should not be running, and
+	 * should not have already run. You are just setting up a thread with the given
+	 * runnable so that another class can use it.
+	 * 
+	 * @return constructed thread
+	 */
+	@Override
+	public Thread newThread(Runnable target) {
+		throw new NotYetImplementedException();
+	}
+
 }

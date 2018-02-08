@@ -19,32 +19,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package tnx.assignment.thread;
+package tnx.lab.thread;
 
 import java.util.concurrent.ThreadFactory;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 
 /**
- * The simplest {@code ThreadFactory} imaginable. This class exists just so that
- * you understand what a {@code ThreadFactory} is, and so that you understand
- * what code would be necessary for you to write if you aren't given a
- * ThreadFactory.
+ * An parallel array sum implementation that uses Java's {@link Thread} class to
+ * sum each half of the array individually.
  * 
  * @author __STUDENT_NAME__
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-public class SimpleThreadFactory implements ThreadFactory {
+public class TAgeSum {
 
 	/**
-	 * Should construct a new {@code Thread}. This thread should not be running, and
-	 * should not have already run. You are just setting up a thread with the given
-	 * runnable so that another class can use it.
+	 * Should sum an array of ages. You are given an array of ages, and should
+	 * calculate the sum of everything in the array. This should be done in
+	 * parallel, calculating the sum of the lower half and the upper half
+	 * individually, then summing those two partial sums. Like with the first
+	 * nucleobase counting assignment, you will need to create an array to store the
+	 * sub-sums.
 	 * 
-	 * @return constructed thread
+	 * @param ages
+	 *            an array of people's ages
+	 * @param threadFactory
+	 *            an object used for creating {@code Thread}s
+	 * @return the sum of every age in the array
+	 * @throws InterruptedException
+	 *             if the current thread was interrupted while waiting
 	 */
-	@Override
-	public Thread newThread(Runnable target) {
+	public static int sumUpperLowerSplit(int[] ages, ThreadFactory threadFactory) throws InterruptedException {
 		throw new NotYetImplementedException();
 	}
 
