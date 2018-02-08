@@ -35,7 +35,7 @@ import sort.core.quick.PivotLocation;
 /**
  * An implementation of the quicksort algorithm that uses Java's Executors.
  * 
- * @author __STUDENT_NAME__
+ * @author Zahra Lambe
  * @author Finn Voichick
  */
 public final class XQuicksort {
