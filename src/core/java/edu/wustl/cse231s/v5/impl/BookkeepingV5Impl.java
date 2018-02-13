@@ -31,13 +31,15 @@ public interface BookkeepingV5Impl extends V5Impl {
 
 	int getFinishInvocationCount();
 
-	int getForasyncRegionInvocationCount();
+	int getForasyncInvocationCount();
 
-	int getForasync2dRegionInvocationCount();
+	int getForasyncChunkedInvovationCount();
+	
+	int getForasync2dInvocationCount();
 
-	int getForasync2dRegionChunkedInvocationCount();
+	int getForasync2dChunkedInvocationCount();
 
-	int getAsyncViaForasyncRegionCount();
+	int getAsyncViaForasyncCount();
 
 	int getTaskCount();
 
