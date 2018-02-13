@@ -39,15 +39,15 @@ public class SuspectWordCount {
 			throws InterruptedException, ExecutionException {
 		Map<String, Integer> map = new HashMap<>();
 		finish(() -> {
-			for (String text : words) {
+			for (String word : words) {
 				async(() -> {
-					Integer count = map.get(text);
+					Integer count = map.get(word);
 					if (count != null) {
 						count = count + 1;
 					} else {
 						count = 1;
 					}
-					map.put(text, count);
+					map.put(word, count);
 				});
 			}
 		});
