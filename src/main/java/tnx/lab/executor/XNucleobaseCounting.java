@@ -21,6 +21,10 @@
  ******************************************************************************/
 package tnx.lab.executor;
 
+import static edu.wustl.cse231s.v5.V5.async;
+import static edu.wustl.cse231s.v5.V5.finish;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +37,10 @@ import count.assignment.NucleobaseCounting;
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.bioinformatics.Nucleobase;
+import midpoint.assignment.MidpointUtils;
 import slice.core.Slice;
 import slice.studio.Slices;
+import tnx.lab.thread.SimpleThreadFactory;
 
 /**
  * A parallel nucleobase counter that uses Java's {@link ExecutorService}
@@ -70,7 +76,15 @@ public class XNucleobaseCounting {
 	 */
 	public static int countLowerUpperSplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		int midpoint = MidpointUtils.calculateMidpoint(0, chromosome.length);
+
+		Future<Integer> lowerSum = executor.submit(() -> {
+			return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, 0, midpoint);
+		});
+
+		int upperSum = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, midpoint, chromosome.length);
+		return lowerSum.get() + upperSum;
+
 	}
 
 	/**
@@ -98,7 +112,47 @@ public class XNucleobaseCounting {
 	 */
 	public static int countNWaySplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase, int numTasks)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		// int[] subSums = new int[numTasks];
+		// finish(() -> {
+		// List<Slice<byte[]>> sliceList = new LinkedList<Slice<byte[]>>();
+		// sliceList = Slices.createNSlices(chromosome, numTasks);
+		//
+		// for (Slice<byte[]> s : sliceList) {
+		// async(() -> {
+		// subSums[s.getSliceIndexId()] =
+		// NucleobaseCounting.countRangeSequential(chromosome, nucleobase,
+		// s.getMinInclusive(), s.getMaxExclusive());
+		// });
+		// }
+		//
+		// });
+		//
+		// int totalSum = 0;
+		// for (int subSum : subSums) {
+		// totalSum += subSum;
+		// }
+		//
+		// return totalSum;
+		int totalSum = 0;
+
+		List<Callable<Integer>> tasks = new ArrayList(numTasks);
+
+		List<Slice<byte[]>> sliceList = new LinkedList<Slice<byte[]>>();
+		sliceList = Slices.createNSlices(chromosome, numTasks);
+		for (Slice<byte[]> s : sliceList) {
+			tasks.add(() -> {
+				return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, s.getMinInclusive(),
+						s.getMaxExclusive());
+			});
+		}
+
+		List<Future<Integer>> futures = executor.invokeAll(tasks);
+
+		for (Future<Integer> future : futures) {
+			totalSum += future.get();
+		}
+
+		return totalSum;
 	}
 
 	/**
@@ -121,7 +175,7 @@ public class XNucleobaseCounting {
 	 */
 	public static int countDivideAndConquer(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase,
 			int threshold) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		return countDivideAndConquerKernel(executor, chromosome, nucleobase, 0, chromosome.length, threshold);
 	}
 
 	/**
@@ -153,6 +207,42 @@ public class XNucleobaseCounting {
 	 */
 	private static int countDivideAndConquerKernel(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase,
 			int min, int maxExclusive, int threshold) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
-	}
+//		int length = maxExclusive - min;
+//		int midpoint = MidpointUtils.calculateMidpoint(min, maxExclusive);
+//		int remainder = 0;
+//		int subSums[] = { 0, 0 };
+//
+//		if (length > threshold) {
+//			finish(() -> {
+//				async(() -> {
+//					subSums[0] = countParallelDivideAndConquerKernel(chromosome, targetNucleobase, threshold, min,
+//							midpoint);
+//				});
+//				subSums[1] = countParallelDivideAndConquerKernel(chromosome, targetNucleobase, threshold, midpoint,
+//						maxExclusive);
+//			});
+//		} else {
+//			remainder = countRangeSequential(chromosome, targetNucleobase, min, maxExclusive);
+//		}
+//		return subSums[0] + subSums[1] + remainder;
+		int length = maxExclusive - min;
+		int remainder = 0;
+		int midpoint = MidpointUtils.calculateMidpoint(min, maxExclusive);
+		int upperHalf=0;
+		int lowerHalf=0;
+		
+		if (length > threshold) {
+			Future<Integer> lowerHalfFuture = executor.submit (() ->{
+				return countDivideAndConquerKernel(executor,chromosome,nucleobase,
+						0, midpoint,threshold);
+			});
+			upperHalf = countDivideAndConquerKernel(executor,chromosome,nucleobase,
+					midpoint, chromosome.length,threshold);
+			lowerHalf =  lowerHalfFuture.get();
+			
+		} else {
+			remainder = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, min, maxExclusive);
+		}
+		return upperHalf+ lowerHalf+remainder;
+		}
 }

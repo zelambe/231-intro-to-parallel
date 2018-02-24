@@ -22,8 +22,10 @@
 package fibonacci.studio;
 
 import static edu.wustl.cse231s.v5.V5.doWork;
+import static edu.wustl.cse231s.v5.V5.future;
 
 import java.math.BigInteger;
+import java.util.concurrent.Future;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.asymptoticanalysis.OrderOfGrowth;
@@ -35,7 +37,23 @@ import fibonacci.core.FibonacciCalculator;
  */
 public class MemoizationSequentialFibonacciCalculator implements FibonacciCalculator {
 	private BigInteger fibonacciMemo(BigInteger[] memos, int n) {
-		throw new NotYetImplementedException();
+			if (n == 0) {
+				return BigInteger.ZERO;
+			}
+			else if (n == 1) {
+				return BigInteger.ONE;
+	
+			} else {
+				if(memos[n]!=null) {
+				}
+				else {
+					memos[n-1] = fibonacciMemo(memos,n-1);
+					memos[n-2] = fibonacciMemo(memos,n-2);
+					memos[n]= memos[n-1].add(memos[n-2]);
+				}
+				return memos[n];
+			}
+			
 	}
 
 	@Override

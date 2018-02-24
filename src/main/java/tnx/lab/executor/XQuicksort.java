@@ -29,8 +29,10 @@ import java.util.concurrent.Future;
 
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
 import edu.wustl.cse231s.NotYetImplementedException;
+import midpoint.assignment.MidpointUtils;
 import sort.core.quick.Partitioner;
 import sort.core.quick.PivotLocation;
+import sort.core.quick.SequentialPartitioner;
 
 /**
  * An implementation of the quicksort algorithm that uses Java's Executors.
@@ -57,7 +59,7 @@ public final class XQuicksort {
 	 */
 	public static void sequentialQuicksort(int[] data, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		sequentialQuicksortKernel(data, 0, data.length, partitioner);
 	}
 
 	/**
@@ -75,7 +77,17 @@ public final class XQuicksort {
 	 */
 	private static void sequentialQuicksortKernel(int[] data, int min, int maxExclusive, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		
+		if (maxExclusive - min > 1) {
+				PivotLocation pivot = partitioner.partitionRange(data, min, maxExclusive);
+			sequentialQuicksortKernel(data, min, pivot.getLeftSidesUpperExclusive(), partitioner);
+			sequentialQuicksortKernel(data, pivot.getRightSidesLowerInclusive(), maxExclusive, partitioner);
+		}else {
+			return;
+		}
+		
+		
+
 	}
 
 	/**

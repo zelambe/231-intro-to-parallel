@@ -24,6 +24,7 @@ package fibonacci.studio;
 import static edu.wustl.cse231s.v5.V5.doWork;
 
 import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.asymptoticanalysis.OrderOfGrowth;
@@ -34,10 +35,57 @@ import fibonacci.core.FibonacciCalculator;
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class LinearRecurrenceSequentialFibonacciCalculator implements FibonacciCalculator {
-	@Override
-	public BigInteger fibonacci(int n) {
-		throw new NotYetImplementedException();
+	private BigInteger fibonacciMemo(BigInteger[]memos, int n) {
+		if (n == 0) {
+			return BigInteger.ZERO;
+		} else if (n == 1) {
+			return BigInteger.ONE;
+		}else {
+			if(memos[n] != null) {
+			}
+			else {
+				int k = 0;
+				BigInteger two = BigInteger.valueOf(2);
+				if(n%2==0) {
+					k=n/2;
+					memos[k] = fibonacciMemo(memos,k);
+					memos[k-1] = fibonacciMemo(memos,k-1);
+					memos[n] = memos[k].multiply(((two.multiply(memos[k-1])).add(memos[k])));
+				}
+				else {
+					k=(n+1)/2;
+					memos[k] = fibonacciMemo(memos,k);
+					memos[k-1] = fibonacciMemo(memos,k-1);
+				memos[n] = memos[k].pow(2).add(memos[k-1].pow(2));
+				}		
+			}
+			return memos[n];
+		}
+			
 	}
+
+//	public BigInteger fibonacci(int n) {
+//		if (n == 0) {
+//			return BigInteger.ZERO;
+//		} else if (n == 1) {
+//			return BigInteger.ONE;
+//		} else {
+//			int k = 0;
+//			BigInteger sum = BigInteger.ZERO;
+//			BigInteger two = BigInteger.valueOf(2);
+//			if(n%2==0) { // if even
+//				k = n/2;
+//				//k*((2*k-1)+k)
+//				sum = fibonacci(k).multiply((two.multiply(fibonacci(k-1))).add(fibonacci(k)));
+//			}
+//			else { //if odd
+//				k= (n+1)/2;
+//				//k^2+(k-1)^2
+//				sum = fibonacci(k).pow(2).add(fibonacci(k-1).pow(2));
+//			}
+//			return sum;
+//		}
+	
 
 	@Override
 	public OrderOfGrowth getOrderOfGrowth() {
@@ -53,5 +101,11 @@ public class LinearRecurrenceSequentialFibonacciCalculator implements FibonacciC
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName();
+	}
+
+	@Override
+	public BigInteger fibonacci(int n) throws InterruptedException, ExecutionException {
+		BigInteger[] memos = new BigInteger[n + 1];
+		return fibonacciMemo(memos, n);		
 	}
 }

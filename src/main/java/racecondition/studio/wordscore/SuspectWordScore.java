@@ -39,13 +39,15 @@ public class SuspectWordScore {
 	public static List<String> toCleanedWordsViaArray(Collection<String> sourceLines)
 			throws InterruptedException, ExecutionException {
 		final int N = sourceLines.size();
+
 		String[] result = new String[N];
 		finish(() -> {
 			int[] i = { 0 };
 			for (String sourceLine : sourceLines) {
+				int[] index = {i[0]};
 				async(() -> {
 					String word = WordScoreUtils.toCleanedWord(sourceLine);
-					result[i[0]] = word;
+					result[index[0]] = word;
 				});
 				i[0]++;
 			}

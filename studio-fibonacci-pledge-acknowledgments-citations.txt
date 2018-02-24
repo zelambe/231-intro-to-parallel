@@ -1,6 +1,7 @@
 Pledge
 ------
-
+Thanks to Kevin for helping me implement the linear recurrence sequential class.
+He helped me with the memoization.
 
 Acknowledgments and Citations
 -----------------------------

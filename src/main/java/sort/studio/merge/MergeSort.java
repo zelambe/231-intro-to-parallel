@@ -52,10 +52,8 @@ public class MergeSort {
 			throws InterruptedException, ExecutionException {
 		int midpoint = MidpointUtils.calculateMidpoint(lowInclusive, highExclusive);
 		if (highExclusive - lowInclusive != 1) {
-
 			sequentialMergeSortKernel(data, lowInclusive, midpoint, combiner);
 			sequentialMergeSortKernel(data, midpoint, highExclusive, combiner);
-
 			// merging
 			// int[] temp = new int[data.length];
 			//
@@ -82,9 +80,7 @@ public class MergeSort {
 			// }
 			// System.arraycopy(temp, lowInclusive, data, lowInclusive, highExclusive-1);
 		}
-
 		combiner.combineRange(data, lowInclusive, midpoint, highExclusive);
-
 	}
 
 	/**

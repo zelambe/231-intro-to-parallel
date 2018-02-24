@@ -39,12 +39,12 @@ public class SuspectMergeSort {
 	private static void sequentialMergeSortKernel(int[] data, int lowInclusive, int highExclusive, Combiner combiner)
 			throws InterruptedException, ExecutionException {
 		int lengthOfSubArray = (highExclusive - lowInclusive);
+		int mid = (highExclusive + lowInclusive) / 2;
 		if (lengthOfSubArray > 1) {
-			int mid = (highExclusive + lowInclusive) / 2;
 			sequentialMergeSortKernel(data, lowInclusive, mid, combiner);
 			sequentialMergeSortKernel(data, mid, highExclusive, combiner);
-			combiner.combineRange(data, lowInclusive, mid, highExclusive);
 		}
+		combiner.combineRange(data, lowInclusive, mid, highExclusive);
 	}
 
 	public static void sequentialMergeSort(int[] data, Combiner combiner)
@@ -55,8 +55,8 @@ public class SuspectMergeSort {
 	private static void parallelMergeSortKernel(int[] data, int lowInclusive, int highExclusive, int threshold,
 			Combiner combiner) throws InterruptedException, ExecutionException {
 		int lengthOfSubArray = (highExclusive - lowInclusive);
+		int mid = (highExclusive + lowInclusive) / 2;
 		if (lengthOfSubArray > threshold) {
-			int mid = (highExclusive + lowInclusive) / 2;
 			finish(() -> {
 				async(() -> {
 					parallelMergeSortKernel(data, lowInclusive, mid, threshold, combiner);
@@ -65,8 +65,9 @@ public class SuspectMergeSort {
 			});
 			combiner.combineRange(data, lowInclusive, mid, highExclusive);
 		} else {
-			sequentialMergeSort(data, combiner);
+			sequentialMergeSortKernel(data, lowInclusive, highExclusive, combiner);
 		}
+
 	}
 
 	public static void parallelMergeSort(int[] data, int threshold, Combiner combiner)
