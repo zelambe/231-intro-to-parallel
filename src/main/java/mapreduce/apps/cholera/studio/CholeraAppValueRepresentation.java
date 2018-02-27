@@ -22,7 +22,6 @@
 package mapreduce.apps.cholera.studio;
 
 /**
- * @author __STUDENT_NAME__
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public enum CholeraAppValueRepresentation {
