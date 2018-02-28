@@ -77,16 +77,13 @@ public final class XQuicksort {
 	 */
 	private static void sequentialQuicksortKernel(int[] data, int min, int maxExclusive, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		
 		if (maxExclusive - min > 1) {
-				PivotLocation pivot = partitioner.partitionRange(data, min, maxExclusive);
-			sequentialQuicksortKernel(data, min, pivot.getLeftSidesUpperExclusive(), partitioner);
-			sequentialQuicksortKernel(data, pivot.getRightSidesLowerInclusive(), maxExclusive, partitioner);
-		}else {
+			PivotLocation pivot = partitioner.partitionRange(data, min, maxExclusive); //crate pivot
+			sequentialQuicksortKernel(data, min, pivot.getLeftSidesUpperExclusive(), partitioner); //lower half
+			sequentialQuicksortKernel(data, pivot.getRightSidesLowerInclusive(), maxExclusive, partitioner); //upper half
+		} else {
 			return;
 		}
-		
-		
 
 	}
 
@@ -105,7 +102,11 @@ public final class XQuicksort {
 	 */
 	public static void parallelQuicksort(ExecutorService executor, int[] data, int threshold, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		Queue<Future<?>> futures = new ConcurrentLinkedQueue<Future<?>>(); //creates a new queue for the futures
+		parallelQuicksortKernel(executor, data, 0, data.length, futures, threshold, partitioner);
+		while (futures.isEmpty() != true) { //gets the value from each future until the queue is empty
+			futures.poll().get();
+		}
 	}
 
 	/**
@@ -135,7 +136,22 @@ public final class XQuicksort {
 	private static void parallelQuicksortKernel(ExecutorService executor, int[] data, int min, int maxExclusive,
 			Queue<Future<?>> futures, int threshold, Partitioner partitioner)
 			throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		if (maxExclusive - min > threshold) {
+			PivotLocation pivot = partitioner.partitionRange(data, min, maxExclusive); // get the pivot
+			Future<?> lowerHalf = executor.submit(() -> {  // lower half
+				parallelQuicksortKernel(executor, data, min, pivot.getLeftSidesUpperExclusive(), futures, threshold, partitioner);
+				return null;
+			});
+			Future<?> upperHalf = executor.submit(() -> {  //upper half
+				parallelQuicksortKernel(executor, data, pivot.getRightSidesLowerInclusive(), maxExclusive, futures, threshold, partitioner);
+				return null;
+			});
+			futures.add(lowerHalf); //add each future to the queue
+			futures.add(upperHalf);
+		} else {
+			sequentialQuicksortKernel(data, min, maxExclusive, partitioner); 
+
+		}
 	}
 
 }

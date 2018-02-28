@@ -59,7 +59,11 @@ public class IntegerSumClassicReducer implements ClassicReducer<Integer, Integer
 
 			@Override
 			public Integer apply(List<Integer> list) {
-				throw new NotYetImplementedException();
+				Integer sum =0;
+				for (Integer i : list) {
+					sum = sum+i;
+				}
+				return sum;
 			}
 
 		};

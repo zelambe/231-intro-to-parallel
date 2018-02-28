@@ -45,7 +45,7 @@ public class SimpleThreadFactory implements ThreadFactory {
 	 */
 	@Override
 	public Thread newThread(Runnable target) {
-		Thread aThread = new Thread(target);
+		Thread aThread = new Thread(target); //creates a thread with the target
 		return aThread;
 	}
 

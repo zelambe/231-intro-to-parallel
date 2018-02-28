@@ -78,12 +78,13 @@ public class XNucleobaseCounting {
 			throws InterruptedException, ExecutionException {
 		int midpoint = MidpointUtils.calculateMidpoint(0, chromosome.length);
 
-		Future<Integer> lowerSum = executor.submit(() -> {
+		Future<Integer> lowerSum = executor.submit(() -> { // lower half
 			return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, 0, midpoint);
 		});
 
-		int upperSum = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, midpoint, chromosome.length);
-		return lowerSum.get() + upperSum;
+		int upperSum = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, midpoint, chromosome.length); // upper
+																														// half
+		return lowerSum.get() + upperSum; // sum
 
 	}
 
@@ -112,43 +113,22 @@ public class XNucleobaseCounting {
 	 */
 	public static int countNWaySplit(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase, int numTasks)
 			throws InterruptedException, ExecutionException {
-		// int[] subSums = new int[numTasks];
-		// finish(() -> {
-		// List<Slice<byte[]>> sliceList = new LinkedList<Slice<byte[]>>();
-		// sliceList = Slices.createNSlices(chromosome, numTasks);
-		//
-		// for (Slice<byte[]> s : sliceList) {
-		// async(() -> {
-		// subSums[s.getSliceIndexId()] =
-		// NucleobaseCounting.countRangeSequential(chromosome, nucleobase,
-		// s.getMinInclusive(), s.getMaxExclusive());
-		// });
-		// }
-		//
-		// });
-		//
-		// int totalSum = 0;
-		// for (int subSum : subSums) {
-		// totalSum += subSum;
-		// }
-		//
-		// return totalSum;
+
 		int totalSum = 0;
 
-		List<Callable<Integer>> tasks = new ArrayList(numTasks);
-
-		List<Slice<byte[]>> sliceList = new LinkedList<Slice<byte[]>>();
-		sliceList = Slices.createNSlices(chromosome, numTasks);
-		for (Slice<byte[]> s : sliceList) {
+		List<Callable<Integer>> tasks = new ArrayList<Callable<Integer>>(numTasks); // list for tasks
+		List<Slice<byte[]>> sliceList = new LinkedList<Slice<byte[]>>(); // list for slices of chromosomes
+		sliceList = Slices.createNSlices(chromosome, numTasks); // put slices in the list
+		for (Slice<byte[]> s : sliceList) { // for every slice, make a new task
 			tasks.add(() -> {
 				return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, s.getMinInclusive(),
 						s.getMaxExclusive());
 			});
 		}
 
-		List<Future<Integer>> futures = executor.invokeAll(tasks);
+		List<Future<Integer>> futures = executor.invokeAll(tasks); // start all of the tasks
 
-		for (Future<Integer> future : futures) {
+		for (Future<Integer> future : futures) { // add up the total sum
 			totalSum += future.get();
 		}
 
@@ -207,42 +187,22 @@ public class XNucleobaseCounting {
 	 */
 	private static int countDivideAndConquerKernel(ExecutorService executor, byte[] chromosome, Nucleobase nucleobase,
 			int min, int maxExclusive, int threshold) throws InterruptedException, ExecutionException {
-//		int length = maxExclusive - min;
-//		int midpoint = MidpointUtils.calculateMidpoint(min, maxExclusive);
-//		int remainder = 0;
-//		int subSums[] = { 0, 0 };
-//
-//		if (length > threshold) {
-//			finish(() -> {
-//				async(() -> {
-//					subSums[0] = countParallelDivideAndConquerKernel(chromosome, targetNucleobase, threshold, min,
-//							midpoint);
-//				});
-//				subSums[1] = countParallelDivideAndConquerKernel(chromosome, targetNucleobase, threshold, midpoint,
-//						maxExclusive);
-//			});
-//		} else {
-//			remainder = countRangeSequential(chromosome, targetNucleobase, min, maxExclusive);
-//		}
-//		return subSums[0] + subSums[1] + remainder;
+
 		int length = maxExclusive - min;
-		int remainder = 0;
 		int midpoint = MidpointUtils.calculateMidpoint(min, maxExclusive);
-		int upperHalf=0;
-		int lowerHalf=0;
-		
+		int[] subSums = { 0, 0 };
+
 		if (length > threshold) {
-			Future<Integer> lowerHalfFuture = executor.submit (() ->{
-				return countDivideAndConquerKernel(executor,chromosome,nucleobase,
-						0, midpoint,threshold);
+			Future<Integer> lowerHalfFuture = executor.submit(() -> { //lower half
+				return countDivideAndConquerKernel(executor, chromosome, nucleobase, min, midpoint, threshold);
 			});
-			upperHalf = countDivideAndConquerKernel(executor,chromosome,nucleobase,
-					midpoint, chromosome.length,threshold);
-			lowerHalf =  lowerHalfFuture.get();
-			
+			subSums[1] = countDivideAndConquerKernel(executor, chromosome, nucleobase, midpoint, maxExclusive, //upperhalf
+					threshold);
+			subSums[0] = lowerHalfFuture.get();
+			return subSums[0] + subSums[1];
+
 		} else {
-			remainder = NucleobaseCounting.countRangeSequential(chromosome, nucleobase, min, maxExclusive);
+			return NucleobaseCounting.countRangeSequential(chromosome, nucleobase, min, maxExclusive); 
 		}
-		return upperHalf+ lowerHalf+remainder;
-		}
+	}
 }

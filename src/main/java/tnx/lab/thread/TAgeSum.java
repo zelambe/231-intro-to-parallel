@@ -55,7 +55,7 @@ public class TAgeSum {
 		int mid = MidpointUtils.calculateMidpoint(0, ages.length);
 		int subSums[] = { 0, 0 };
 
-		Thread lowerThread = threadFactory.newThread(() -> {
+		Thread lowerThread = threadFactory.newThread(() -> { //sums the lower half
 			for (int i = 0; i < mid; i++) {
 				subSums[0] = subSums[0] + ages[i];
 			}
@@ -63,13 +63,13 @@ public class TAgeSum {
 
 		lowerThread.start();
 
-		for (int i = 0; mid < ages.length; i++) {
+		for (int i = mid; i < ages.length; i++) { //sums the upper half in parallel with the lower
 			subSums[1] = subSums[1] + ages[i];
 		}
 
 		lowerThread.join();
 
-		return subSums[0] + subSums[1];
+		return subSums[0] + subSums[1]; //sum
 	}
 
 }

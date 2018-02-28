@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiFunction;
 
 /**
  * @author Zahra Lambe
@@ -37,7 +38,7 @@ import java.util.concurrent.ExecutionException;
 public class SuspectWordCount {
 	public static Map<String, Integer> countWords(Iterable<String> words)
 			throws InterruptedException, ExecutionException {
-		Map<String, Integer> map = new HashMap<>();
+		Map<String, Integer> map = new ConcurrentHashMap<>();
 		finish(() -> {
 			for (String word : words) {
 				async(() -> {
@@ -53,4 +54,5 @@ public class SuspectWordCount {
 		});
 		return map;
 	}
+			
 }

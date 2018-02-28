@@ -78,7 +78,8 @@ public interface ClassicReducer<V, R> extends Collector<V, List<V>, R> {
 
 			@Override
 			public List<V> get() {
-				throw new NotYetImplementedException();
+				List<V> list = new LinkedList<V>();
+				return list;
 			}
 
 		};
@@ -97,7 +98,7 @@ public interface ClassicReducer<V, R> extends Collector<V, List<V>, R> {
 
 			@Override
 			public void accept(List<V> list, V item) {
-				throw new NotYetImplementedException();
+				list.add(item);
 			}
 
 		};
@@ -117,7 +118,10 @@ public interface ClassicReducer<V, R> extends Collector<V, List<V>, R> {
 
 			@Override
 			public List<V> apply(List<V> a, List<V> b) {
-				throw new NotYetImplementedException();
+				for (V value : b) {
+					a.add(value);
+				}
+				return a;
 			}
 
 		};
