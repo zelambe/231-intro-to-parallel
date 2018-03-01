@@ -42,14 +42,11 @@ public class KMerMapper implements Mapper<byte[], String, Integer> {
 
 	@Override
 	public void map(byte[] sequence, BiConsumer<String, Integer> keyValuePairConsumer) {
-		if (sequence.length > 0) {
-			for (int i = 1; i < sequence.length; i++) { //for length of kmer
-				for (int j = 1; j < sequence.length; j++) { // for offset of kmer
-					keyValuePairConsumer.accept(toStringKMer(sequence, j, i), 1);
-				}
+			for (int i = 0; i <= sequence.length-kMerLength; i++) { //for offset
+					keyValuePairConsumer.accept(toStringKMer(sequence, i, kMerLength), 1);
 			}
 		}
-	}
+	
 
 	/**
 	 * Stores the information from the given sequence into a String. For example, if

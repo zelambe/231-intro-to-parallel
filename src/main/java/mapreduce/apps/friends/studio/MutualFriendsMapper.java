@@ -61,6 +61,12 @@ public class MutualFriendsMapper implements Mapper<Account, OrderedPair<AccountI
 	 */
 	@Override
 	public void map(Account account, BiConsumer<OrderedPair<AccountId>, Set<AccountId>> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		AccountId id = account.getId(); 	// get the id from account in the parameter
+		Set<AccountId> friendSet = account.getFriendIds(); 	//get the set of friends
+		
+		for (AccountId friend : friendSet) { 	//iterate through the set of friends
+			OrderedPair<AccountId> pair = new OrderedPair<AccountId>(id, friend); 	//create a pair with main account
+			keyValuePairConsumer.accept(pair, friendSet); 	//send pair and friend set to BiConsumer
+			}
 	}
 }
