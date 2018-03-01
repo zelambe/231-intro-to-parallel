@@ -41,22 +41,51 @@ import edu.wustl.cse231s.NotYetImplementedException;
 public class IntSumCollector implements Collector<Integer, MutableInt, Integer> {
 	@Override
 	public Supplier<MutableInt> supplier() {
-		throw new NotYetImplementedException();
+		return new Supplier<MutableInt>() {
+
+			@Override
+			public MutableInt get() {
+				return new MutableInt();
+			}
+		};
 	}
 
 	@Override
 	public BiConsumer<MutableInt, Integer> accumulator() {
-		throw new NotYetImplementedException();
+		return new BiConsumer<MutableInt, Integer>() {
+			
+			@Override
+			public void accept(MutableInt mutableInt, Integer integer) {
+				mutableInt.add(integer);
+			}
+
+		};
 	}
 
 	@Override
 	public BinaryOperator<MutableInt> combiner() {
-		throw new NotYetImplementedException();
-	}
+		return new BinaryOperator<MutableInt>() {
+
+			@Override
+			public MutableInt apply(MutableInt a, MutableInt b) {
+				int i = b.getValue();
+				a.add(i);
+				return a;
+			}
+			
+		};
+}
 
 	@Override
 	public Function<MutableInt, Integer> finisher() {
-		throw new NotYetImplementedException();
+		return new Function<MutableInt,Integer>(){
+
+			@Override
+			public Integer apply(MutableInt a) {
+				return a.toInteger();
+			}
+			
+		};
 	}
 
 	@Override
