@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import mapreduce.apps.cholera.core.CholeraDeath;
@@ -43,14 +44,31 @@ import mapreduce.framework.core.Mapper;
  */
 public class CholeraApp {
 	public static CholeraAppValueRepresentation getValueRepresentation() {
-		throw new NotYetImplementedException();
-	}
+		return CholeraAppValueRepresentation.HIGH_NUMBERS_SUSPECT;
+}
 
 	public static Mapper<CholeraDeath, WaterPump, Number> createMapper() {
-		throw new NotYetImplementedException();
+		return new Mapper<CholeraDeath,WaterPump, Number>(){
+
+			@Override
+			public void map(CholeraDeath item, BiConsumer<WaterPump, Number> keyValuePairConsumer) {
+				double minDistance = 1000.0;
+				WaterPump minPump = null;
+				for (WaterPump pump: WaterPump.values()) { //find the shortest distance, send to BiConsumer
+					double currentDistance =pump.getLocation().getDistanceTo(item.getLocation()); //distance between death and pump
+					if (currentDistance < minDistance) {
+						minDistance = currentDistance;
+						minPump = pump;
+					}
+					
+				}
+				keyValuePairConsumer.accept(minPump, 1);
+			}
+			
+		};
 	}
 
 	public static Collector<? extends Number, ?, ? extends Number> createCollector() {
-		throw new NotYetImplementedException();
+		return new IntSumCollector();
 	}
 }

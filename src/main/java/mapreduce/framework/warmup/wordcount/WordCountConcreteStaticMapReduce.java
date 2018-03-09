@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.util.KeyValuePair;
@@ -51,21 +52,28 @@ public class WordCountConcreteStaticMapReduce {
 	 * {@link WordCountMapper#map(TextSection, BiConsumer)};
 	 */
 	static void map(TextSection textSection, BiConsumer<String, Integer> keyValuePairConsumer) {
-		throw new NotYetImplementedException();
+		for (String string : textSection.getWords()) {
+			if (string.length() > 0) {
+				string = string.toLowerCase();
+				keyValuePairConsumer.accept(string, 1);
+			}
+		}
 	}
 
 	/**
 	 * {@link ClassicReducer#supplier()};
 	 */
 	static List<Integer> reduceCreateList() {
-		throw new NotYetImplementedException();
+		List<Integer> list = new LinkedList<Integer>();
+		return list;
+
 	}
 
 	/**
 	 * {@link ClassicReducer#accumulator()};
 	 */
 	static void reduceAccumulate(List<Integer> list, int v) {
-		throw new NotYetImplementedException();
+		list.add(v);
 	}
 
 	/**
@@ -74,14 +82,21 @@ public class WordCountConcreteStaticMapReduce {
 	 * {@link ClassicReducer#combiner()};
 	 */
 	static void reduceCombine(List<Integer> a, List<Integer> b) {
-		throw new NotYetImplementedException();
+		for (int i : b) {
+			a.add(i);
+		}
+		// return a
 	}
 
 	/**
 	 * {@link IntegerSumClassicReducer#finisher()};
 	 */
 	static int reduceFinish(List<Integer> list) {
-		throw new NotYetImplementedException();
+		int sum = 0;
+		for (int i : list) {
+			sum += i;
+		}
+		return sum;
 	}
 
 	/**
@@ -89,6 +104,15 @@ public class WordCountConcreteStaticMapReduce {
 	 */
 	static List<KeyValuePair<String, Integer>>[] mapAll(TextSection[] input)
 			throws InterruptedException, ExecutionException {
+		List<KeyValuePair<String, Integer>>[] listArray = new List[input.length];
+		BiConsumer<String, Integer> consumer = (s, a) -> {
+			List<KeyValuePair<String, Integer>> list = new LinkedList<KeyValuePair<String, Integer>>();
+			KeyValuePair<String, Integer> pair = new KeyValuePair(s, a);
+			list.add(pair);
+		};
+		for (TextSection t : input) {
+			map(t, consumer);
+		}
 		throw new NotYetImplementedException();
 	}
 

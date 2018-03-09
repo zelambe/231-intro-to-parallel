@@ -70,9 +70,13 @@ public class MutualFriendsClassicReducer implements ClassicReducer<Set<AccountId
 
 			@Override
 			public MutualFriendIds apply(List<Set<AccountId>> t) {
-
 				MutualFriendIds result = MutualFriendIds.createInitializedToUniverse(universe);
-				throw new NotYetImplementedException();
+				for (Set<AccountId> s : t) {
+					result.intersectWith(s);
+
+				}
+
+				return result;
 			}
 
 		};

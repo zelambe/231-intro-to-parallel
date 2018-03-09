@@ -31,7 +31,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.stream.Collector;
+
+import javax.swing.text.AsyncBoxView;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.util.KeyValuePair;
@@ -111,6 +114,12 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 	 *             ExecutionException
 	 */
 	List<KeyValuePair<K, V>>[] mapAll(E[] input) throws InterruptedException, ExecutionException {
+		@SuppressWarnings("unchecked")
+		List<KeyValuePair<K, V>>[] list = new List[input.length];
+		
+		for(int i=0; i<input.length; i++) { //ask about bifunction.
+		}
+		
 		throw new NotYetImplementedException();
 	}
 
@@ -134,6 +143,7 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 	 * @see Map#computeIfAbsent(Object, java.util.function.Function)
 	 */
 	Map<K, A> accumulateAll(List<KeyValuePair<K, V>>[] mapAllResults) {
+		
 		throw new NotYetImplementedException();
 	}
 
