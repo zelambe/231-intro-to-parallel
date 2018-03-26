@@ -19,18 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.lab;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+import backtrack.lab.rubric.BacktrackRubric;
+import sudoku.core.io.PuzzlesResource;
+import sudoku.core.io.PuzzlesResourceUtils;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
+ * 
+ *         {@link DefaultConstraintPropagator}
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+@BacktrackRubric(BacktrackRubric.Category.CONTRAINT_PROPAGATOR)
+@RunWith(Parameterized.class)
+public class PeerEliminationContraintPropagationTest extends AbstractContraintPropagationTest {
+	public PeerEliminationContraintPropagationTest(String givens) {
+		super(givens);
+	}
+
+	@Parameters(name = "{0}")
+	public static Collection<Object[]> getConstructorArguments() throws IOException {
+		List<String> easyGivensList = PuzzlesResourceUtils.readGivens(PuzzlesResource.EASY50);
+		List<Integer> completelyConstrainableWithPeerEliminationOnlyIndices = Arrays.asList(0, 4, 7, 11, 15, 16, 18, 19,
+				33, 35, 37, 39);
+
+		Collection<Object[]> results = new LinkedList<>();
+		for (int i : completelyConstrainableWithPeerEliminationOnlyIndices) {
+			results.add(new Object[] { easyGivensList.get(i) });
+		}
+		return results;
+	}
 }

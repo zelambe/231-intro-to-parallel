@@ -19,18 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.lab;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.Collection;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+import edu.wustl.cse231s.NotYetImplementedException;
+import net.jcip.annotations.Immutable;
+import sudoku.core.Square;
+import sudoku.core.SquareSearchAlgorithm;
+import sudoku.core.SudokuPuzzle;
 
 /**
+ * @author __STUDENT_NAME__
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+@Immutable
+public class FewestOptionsFirstSquareSearchAlgorithm implements SquareSearchAlgorithm {
+	/**
+	 * A square search algorithm that prefers squares with fewer options. In other
+	 * words, this algorithm should always pick the empty square that is the most
+	 * constrained by its peers. This algorithm should return a square with no
+	 * options if it exists (meaning that the puzzle is impossible to solve), or it
+	 * should return null, if the puzzle is already completely solved.
+	 */
+	@Override
+	public Square selectNextUnfilledSquare(SudokuPuzzle puzzle) {
+		throw new NotYetImplementedException();
+	}
 }

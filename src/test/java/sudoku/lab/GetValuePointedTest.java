@@ -19,18 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.lab;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+import org.junit.Test;
+
+import backtrack.lab.rubric.BacktrackRubric;
+import sudoku.core.ConstraintPropagator;
+import sudoku.core.Square;
+import sudoku.instructor.InstructorSudokuTestUtils;
+import sudoku.lab.DefaultImmutableSudokuPuzzle;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
+ * 
+ *         {@link DefaultImmutableSudokuPuzzle#getValue(Square)}
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+@BacktrackRubric(BacktrackRubric.Category.IMMUTABLE_SUDOKU_PUZZLE)
+public class GetValuePointedTest {
+	@Test
+	public void test() {
+		String givens = ".1...............................................................................";
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
+				.createNonPropagatingConstraintPropagator();
+		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
+		assertNotEquals("row and column flipped???", 1, puzzle.getValue(Square.B1));
+		assertEquals(1, puzzle.getValue(Square.A2));
+	}
 }

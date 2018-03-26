@@ -19,18 +19,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.lab;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.junit.Assert.assertTrue;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+import org.junit.Test;
+
+import sudoku.core.ConstraintPropagator;
+import sudoku.core.SolutionUtils;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
+ * 
+ *         {@link DefaultConstraintPropagator}
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+public class AbstractContraintPropagationTest {
+	private final String givens;
+
+	public AbstractContraintPropagationTest(String givens) {
+		this.givens = givens;
+	}
+
+	@Test
+	public void test() {
+		ConstraintPropagator constraintPropagator = new DefaultConstraintPropagator();
+		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
+		assertTrue(SolutionUtils.isCompletelyFilledInAndEachSquareIsValid(puzzle));
+	}
 }

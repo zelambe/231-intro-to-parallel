@@ -19,18 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.lab;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+@RunWith(Suite.class)
+@Suite.SuiteClasses({ GetValuePointedTest.class, PeerEliminationContraintPropagationTest.class,
+		PeerEliminationAndUnitAssignmentContraintPropagationTest.class, ImmutableSudokuPuzzleTest.class,
+		FewestOptionsFirstIsAlreadySetPointedTest.class, FewestOptionsFirstReturns2OptionSquareTest.class,
+		FewestOptionsFirstReturns0OptionSquareTest.class, FewestOptionsFirstReturnsNullForSolvedPuzzleTest.class,
+		SolveReturningSomethingOtherThanGivensTest.class, SolveTest.class, })
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+public class SudokuTestSuite {
 }

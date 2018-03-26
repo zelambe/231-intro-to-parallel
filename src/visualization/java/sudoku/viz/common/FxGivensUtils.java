@@ -19,18 +19,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package backtrack.lab;
+package sudoku.viz.common;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.io.IOException;
+import java.util.List;
 
-import nqueens.lab.NQueensTestSuite;
-import sudoku.lab.SudokuTestSuite;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
+import sudoku.core.io.PuzzlesResource;
+import sudoku.core.io.PuzzlesResourceUtils;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ NQueensTestSuite.class, SudokuTestSuite.class, NoPrintingTest.class })
-public class BacktrackTestSuite {
+public class FxGivensUtils {
+	public static ComboBox<String> createGivensComboBox(ChangeListener<String> changeListener) throws IOException {
+		List<String> givensList = PuzzlesResourceUtils.readGivens(PuzzlesResource.HARDEST);
+		ObservableList<String> givensOptions = FXCollections.observableArrayList(givensList);
+		ComboBox<String> givensComboBox = new ComboBox<>(givensOptions);
+		givensComboBox.setVisibleRowCount(givensList.size());
+		// givensComboBox.setCellFactory((ListView<String> listView) -> {
+		// return new ListCell<String>() {
+		// @Override
+		// public void updateItem(String item, boolean empty) {
+		// super.updateItem(item, empty);
+		// this.setText("givens: [" + item + "]");
+		// }
+		// };
+		// });
+		givensComboBox.setStyle("-fx-font: 11 monospace;");
+		givensComboBox.valueProperty().addListener(changeListener);
+		return givensComboBox;
+	}
 }
