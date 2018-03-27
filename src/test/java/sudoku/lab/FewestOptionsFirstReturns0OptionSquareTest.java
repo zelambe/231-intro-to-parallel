@@ -24,6 +24,8 @@ package sudoku.lab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -33,6 +35,7 @@ import backtrack.lab.rubric.BacktrackRubric;
 import sudoku.core.ConstraintPropagator;
 import sudoku.core.ImmutableSudokuPuzzle;
 import sudoku.core.Square;
+import sudoku.instructor.InstructorSudokuTestUtils;
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
@@ -45,21 +48,23 @@ public class FewestOptionsFirstReturns0OptionSquareTest {
 	public void test() {
 		// source of original givens (now constrained to no hope):
 		// http://norvig.com/hardest.txt
-		String givensWithNoHope = "6.7...8.3.4.7.3.6..3...X....8.5341763742615..156897432.2.67935....38.6...6341....".replaceAll("X", ".");
-		ConstraintPropagator constraintPropagator = new DefaultConstraintPropagator();
-		ImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givensWithNoHope);
-		Square expectedSquare = Square.A3;
-		int expectedSquareOptionsLength = puzzle.getOptions(expectedSquare).size();
-		assertEquals(0, expectedSquareOptionsLength);
+		String doomedGivens = "85...24..72......9..4....2....147..2375..8914.4.......4..981.7..17....9....736.4.";
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerAndUnitConstraintPropagator();
+		ImmutableSudokuPuzzle doomedPuzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, doomedGivens);
+		ImmutableSudokuPuzzle deadPuzzle = doomedPuzzle.createNext(Square.A3, 1);
+		List<Square> expectedSquares = Arrays.asList(Square.D1, Square.G3, Square.H1, Square.H7);
 		for (Square square : Square.values()) {
-			if (expectedSquare != square) {
-				assertNotEquals(0, puzzle.getOptions(square).size());
+			int size = deadPuzzle.getOptions(square).size();
+			if (expectedSquares.contains(square) ) {
+				assertEquals(0, size);
+			} else {
+				assertNotEquals(square.name(), 0, size);
 			}
 		}
 
-		Square actualSquare = new FewestOptionsFirstSquareSearchAlgorithm().selectNextUnfilledSquare(puzzle);
-		Set<Integer> options = puzzle.getOptions(actualSquare);
+		Square actualSquare = new FewestOptionsFirstSquareSearchAlgorithm().selectNextUnfilledSquare(deadPuzzle);
+		Set<Integer> options = deadPuzzle.getOptions(actualSquare);
 		Assert.assertEquals("The number of options for the square is incorrect", 0, options.size());
-		Assert.assertEquals(expectedSquare, actualSquare);
+		Assert.assertTrue(expectedSquares.contains(actualSquare));
 	}
 }

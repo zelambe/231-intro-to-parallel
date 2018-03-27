@@ -24,21 +24,35 @@ package tnx.lab.rubric;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import edu.wustl.cse231s.rubric.RubricCategory;
+
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TnXRubric {
-	public static enum Category {
-		THREAD_NEW,
-		THREAD_UPPER_LOWER,
-		
-		EXECUTOR_COUNT_2WAY,
-		EXECUTOR_COUNT_NWAY,
-		EXECUTOR_COUNT_DIVIDE_AND_CONQUER,
-		
-		SEQUENTIAL_QUICKSORT,
-		EXECUTOR_QUICKSORT,
+	public static enum Category implements RubricCategory {
+		THREAD_NEW(0.05),
+		THREAD_UPPER_LOWER(0.1),
+
+		EXECUTOR_COUNT_2WAY(0.1),
+		EXECUTOR_COUNT_NWAY(0.15),
+		EXECUTOR_COUNT_DIVIDE_AND_CONQUER(0.15),
+
+		SEQUENTIAL_QUICKSORT(0.1),
+		EXECUTOR_QUICKSORT(0.25);
+
+		private final double portion;
+
+		private Category(double portion) {
+			this.portion = portion;
+		}
+
+		@Override
+		public double getPortion() {
+			return this.portion;
+		}
 	}
+
 	Category[] value();
 }

@@ -44,7 +44,7 @@ import mapreduce.framework.lab.rubric.MapReduceRubric;
  *         STUDENT_COMPLETE is failing, move on to {@link ClassicReducer}
  */
 @RunWith(Parameterized.class)
-@MapReduceRubric(MapReduceRubric.Category.COLLECTOR_UNCATEGORIZED)
+@MapReduceRubric(MapReduceRubric.Category.UNCATEGORIZED)
 public class WordCountCollectorStressTest<A> extends AbstractWordCountStressTest<A> {
 	public WordCountCollectorStressTest(CollectorSolution collectorSolution, WordsResource wordsResource)
 			throws IOException {

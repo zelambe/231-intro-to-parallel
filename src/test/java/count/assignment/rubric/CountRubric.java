@@ -24,19 +24,32 @@ package count.assignment.rubric;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import edu.wustl.cse231s.rubric.RubricCategory;
+
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CountRubric {
-	public static enum Category {
-		RANGE,
-		SEQUENTIAL,
-		MIDPOINT,
-		LOWER_UPPER,
-		NWAY,
-		DIVIDE_AND_CONQUER,
-		NO_PRINTING
+	public static enum Category implements RubricCategory {
+		RANGE(0.1),
+		SEQUENTIAL(0.05),
+		MIDPOINT(0.05),
+		LOWER_UPPER(0.2),
+		NWAY(0.25),
+		DIVIDE_AND_CONQUER(0.25),
+		NO_PRINTING(0.0);
+		private final double portion;
+
+		private Category(double portion) {
+			this.portion = portion;
+		}
+
+		@Override
+		public double getPortion() {
+			return this.portion;
+		}
 	}
+
 	Category[] value();
 }
