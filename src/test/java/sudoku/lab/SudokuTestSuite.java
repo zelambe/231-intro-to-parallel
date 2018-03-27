@@ -25,11 +25,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ GetValuePointedTest.class, PeerEliminationContraintPropagationTest.class,
-		PeerEliminationAndUnitAssignmentContraintPropagationTest.class, ImmutableSudokuPuzzleTest.class,
+@Suite.SuiteClasses({ GetValuePointedTest.class, ImmutableSudokuPuzzleTest.class,
 		FewestOptionsFirstIsAlreadySetPointedTest.class, FewestOptionsFirstReturns2OptionSquareTest.class,
-		FewestOptionsFirstReturns0OptionSquareTest.class, FewestOptionsFirstReturnsNullForSolvedPuzzleTest.class,
-		SolveReturningSomethingOtherThanGivensTest.class, SolveTest.class, })
+		/* FewestOptionsFirstReturns0OptionSquareTest.class, */ FewestOptionsFirstReturnsNullForSolvedPuzzleTest.class,
+		SolveReturningSomethingOtherThanGivensTest.class, SolveTest.class,
+		PeerEliminationContraintPropagationTest.class, PeerEliminationAndUnitAssignmentContraintPropagationTest.class })
 
 /**
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)

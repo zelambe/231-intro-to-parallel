@@ -56,7 +56,7 @@ public class FewestOptionsFirstReturns0OptionSquareTest {
 		for (Square square : Square.values()) {
 			int size = deadPuzzle.getOptions(square).size();
 			if (expectedSquares.contains(square) ) {
-				assertEquals(0, size);
+				assertEquals(square.name(), 0, size);
 			} else {
 				assertNotEquals(square.name(), 0, size);
 			}

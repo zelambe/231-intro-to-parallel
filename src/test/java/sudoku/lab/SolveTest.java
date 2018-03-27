@@ -42,6 +42,7 @@ import sudoku.core.ConstraintPropagator;
 import sudoku.core.GivensUtils;
 import sudoku.core.ImmutableSudokuPuzzle;
 import sudoku.core.SolutionUtils;
+import sudoku.instructor.InstructorSudokuTestUtils;
 import sudoku.viz.solution.SquareSearchAlgorithmSupplier;
 
 /**
@@ -78,7 +79,7 @@ public class SolveTest {
 	@Parameters(name = "{0}, givens: {1}")
 	public static Collection<Object[]> getConstructorArguments() {
 		Collection<Object[]> results = new LinkedList<>();
-		Supplier<ConstraintPropagator> constraintPropagatorSupplier = ()-> new DefaultConstraintPropagator();
+		Supplier<ConstraintPropagator> constraintPropagatorSupplier = ()-> InstructorSudokuTestUtils.createPeerAndUnitConstraintPropagator();
 		for (SquareSearchAlgorithmSupplier squareSearchAlgorithmSupplier : SquareSearchAlgorithmSupplier
 				.studentValues()) {
 			List<String> givensList = GivensUtils.getGivensToTest(squareSearchAlgorithmSupplier);
