@@ -112,8 +112,7 @@ public class AsyncTest {
 
 	@Test
 	public void testTasksAndFinishes() throws InterruptedException, ExecutionException {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		ImmutableSudokuPuzzle original = new DefaultImmutableSudokuPuzzle(constraintPropagator, this.givens);
 
 		int tasksNumLowerBound = getNumBlanks() - 1;
@@ -137,8 +136,7 @@ public class AsyncTest {
 
 	@Test
 	public void testCPL() throws InterruptedException, ExecutionException {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		ImmutableSudokuPuzzle original = new DefaultImmutableSudokuPuzzle(constraintPropagator, this.givens);
 
 		test(() -> {

@@ -42,8 +42,7 @@ public class GetValuePointedTest {
 	@Test
 	public void test() {
 		String givens = ".1...............................................................................";
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		assertNotEquals("row and column flipped???", 1, puzzle.getValue(Square.B1));
 		assertEquals(1, puzzle.getValue(Square.A2));

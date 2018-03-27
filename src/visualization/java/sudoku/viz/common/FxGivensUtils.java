@@ -22,6 +22,8 @@
 package sudoku.viz.common;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.beans.value.ChangeListener;
@@ -36,7 +38,14 @@ import sudoku.core.io.PuzzlesResourceUtils;
  */
 public class FxGivensUtils {
 	public static ComboBox<String> createGivensComboBox(ChangeListener<String> changeListener) throws IOException {
-		List<String> givensList = PuzzlesResourceUtils.readGivens(PuzzlesResource.HARDEST);
+		List<String> givensList = new LinkedList<>();
+		givensList.addAll(PuzzlesResourceUtils.readGivens(PuzzlesResource.HARDEST));
+		List<String> easyGivensList = PuzzlesResourceUtils.readGivens(PuzzlesResource.EASY50);
+
+		List<Integer> completelyConstrainableWithPeerEliminationOnlyIndices = Arrays.asList(0, 4, 7, 11, 15, 16, 18, 19,
+				33, 35, 37, 39);
+
+		givensList.add(easyGivensList.get(completelyConstrainableWithPeerEliminationOnlyIndices.get(0)));
 		ObservableList<String> givensOptions = FXCollections.observableArrayList(givensList);
 		ComboBox<String> givensComboBox = new ComboBox<>(givensOptions);
 		givensComboBox.setVisibleRowCount(givensList.size());

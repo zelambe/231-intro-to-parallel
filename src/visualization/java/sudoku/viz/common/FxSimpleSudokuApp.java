@@ -50,8 +50,8 @@ public abstract class FxSimpleSudokuApp extends Application {
 
 		ComboBox<String> givensComboBox = FxGivensUtils
 				.createGivensComboBox((ObservableValue<? extends String> ov, String oldValue, String newValue) -> {
-					ImmutableSudokuPuzzle puzzle = InstructorSudokuTestUtils.createPuzzle(newValue, null);
-					mainPane.setGivensPuzzle(puzzle);
+					ImmutableSudokuPuzzle puzzle = InstructorSudokuTestUtils.createUnpropagatedPuzzle(newValue, null);
+					mainPane.setInitialPuzzle(puzzle);
 				});
 
 		givensComboBox.getSelectionModel().selectFirst();

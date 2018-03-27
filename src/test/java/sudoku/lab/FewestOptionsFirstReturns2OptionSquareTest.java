@@ -47,8 +47,7 @@ public class FewestOptionsFirstReturns2OptionSquareTest {
 		// source: http://norvig.com/hardest.txt
 		String givensWithFewestOptionsSquareWhichIsNotFirstOrLastOpenSquare = "7.....4...2..7..8...3..8.799..5..3...6..2..9...1.97..6...3..9...3..4..6...9..1.35";
 
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator,
 				givensWithFewestOptionsSquareWhichIsNotFirstOrLastOpenSquare);
 

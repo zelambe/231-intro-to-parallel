@@ -56,6 +56,9 @@ public final class DefaultConstraintPropagator implements ConstraintPropagator {
 		throw new NotYetImplementedException();
 	}
 
+	/**
+	 * @throws IllegalArgumentException if the given value is not an option for the given square
+	 */
 	private static void assign(Map<Square, SortedSet<Integer>> optionSets, Square square, int value) {
 		throw new NotYetImplementedException();
 	}

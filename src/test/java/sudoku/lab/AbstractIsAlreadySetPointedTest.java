@@ -55,7 +55,7 @@ public abstract class AbstractIsAlreadySetPointedTest {
 	@Test
 	public void testAlreadySet() {
 		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+				.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		Square actualSquare = squareSearchAlgorithm.selectNextUnfilledSquare(puzzle);
 		assertNotEquals("The selected square is already filled, it should be an unfilled square", expectedSquare,

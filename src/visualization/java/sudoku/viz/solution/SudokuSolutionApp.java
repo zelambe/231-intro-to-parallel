@@ -23,8 +23,10 @@ package sudoku.viz.solution;
 
 import static edu.wustl.cse231s.v5.V5.launchApp;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -47,10 +49,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import sudoku.core.ConstraintPropagator;
 import sudoku.core.ImmutableSudokuPuzzle;
 import sudoku.core.Square;
 import sudoku.core.SquareSearchAlgorithm;
 import sudoku.instructor.InstructorSudokuTestUtils;
+import sudoku.lab.DefaultConstraintPropagator;
 import sudoku.lab.ParallelSudoku;
 import sudoku.viz.common.FxGivensUtils;
 import sudoku.viz.common.FxSudokuPane;
@@ -60,12 +64,15 @@ import sudoku.viz.common.FxSudokuSceneUtils;
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
 public class SudokuSolutionApp extends VizApp {
-	private ImmutableSudokuPuzzle givensPuzzle;
+	private String givens;
+	private ImmutableSudokuPuzzle initialPuzzle;
+	private boolean isReset = true;
 
 	private FxSudokuPane mainPane;
 
 	private final StringProperty[][] propertyMatrix = new StringProperty[9][9];
 	private ComboBox<Solver> solverComboBox;
+	private ComboBox<Propagator> propagatorComboBox;
 	private ComboBox<SquareSearchAlgorithmSupplier> searchComboBox;
 
 	public SudokuSolutionApp() {
@@ -101,8 +108,7 @@ public class SudokuSolutionApp extends VizApp {
 				property.setValue(value > 0 ? Integer.toString(value) : "-");
 				label.textProperty().unbind();
 				label.textProperty().bind(property);
-				label.setTextFill(SudokuSolutionApp.this.getGivensPuzzle().isSquareValueDetermined(square) ? Color.BLACK
-						: Color.DARKGRAY);
+				label.setTextFill(SudokuSolutionApp.this.isGiven(square) ? Color.BLACK : Color.DARKGRAY);
 			}
 
 			private final Map<Square, Label> squareToLabelMap = new HashMap<>();
@@ -125,6 +131,8 @@ public class SudokuSolutionApp extends VizApp {
 			}
 		};
 
+		private final String repr;
+
 		private Solver(String repr) {
 			this.repr = repr;
 		}
@@ -137,8 +145,47 @@ public class SudokuSolutionApp extends VizApp {
 			return this.repr;
 		}
 
-		private final String repr;
 	};
+
+	private static enum Propagator {
+		STUDENT("student's Propagator") {
+			@Override
+			public ConstraintPropagator createConstaintPropagator() {
+				return new DefaultConstraintPropagator();
+			}
+		},
+		INSTRUCTOR_UNPROPAGATED("instructor's UNPROPAGATED") {
+			@Override
+			public ConstraintPropagator createConstaintPropagator() {
+				return null;
+			}
+		},
+		INSTRUCTOR_PEER_ONLY("instructor's PEER_ONLY Propagator") {
+			@Override
+			public ConstraintPropagator createConstaintPropagator() {
+				return InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
+			}
+		},
+		INSTRUCTOR_PEER_AND_UNIT("instructor's PEER_AND_UNIT Propagator") {
+			@Override
+			public ConstraintPropagator createConstaintPropagator() {
+				return InstructorSudokuTestUtils.createPeerAndUnitConstraintPropagator();
+			}
+		};
+		private final String repr;
+
+		private Propagator(String repr) {
+			this.repr = repr;
+		}
+
+		public abstract ConstraintPropagator createConstaintPropagator();
+
+		@Override
+		public String toString() {
+			return this.repr;
+		}
+
+	}
 
 	public void handleCreateNextPuzzle(ImmutableSudokuPuzzle puzzle) throws RuntimeInterruptedException {
 		Objects.requireNonNull(puzzle);
@@ -175,12 +222,23 @@ public class SudokuSolutionApp extends VizApp {
 		return null;
 	}
 
+	private void updateToInitial() {
+		if (givens != null) {
+			Propagator propagator = propagatorComboBox.getValue();
+			ConstraintPropagator constraintPropagator = propagator.createConstaintPropagator();
+			initialPuzzle = InstructorSudokuTestUtils.createPuzzle(givens, constraintPropagator, this);
+			Platform.runLater(() -> {
+				this.mainPane.setInitialPuzzle(initialPuzzle);
+			});
+		}
+	}
+
 	@Override
 	protected void resetIfNecessary() {
 		if (Platform.isFxApplicationThread()) {
-			this.updateToGivens();
+			this.updateToInitial();
 		} else {
-			Platform.runLater(() -> updateToGivens());
+			Platform.runLater(() -> updateToInitial());
 		}
 	}
 
@@ -190,15 +248,11 @@ public class SudokuSolutionApp extends VizApp {
 			Solver sudokuSolver = this.solverComboBox.getValue();
 			SquareSearchAlgorithmSupplier squareSearchAlgorithmSupplier = this.searchComboBox.getValue();
 
-			System.out.println(sudokuSolver);
-			System.out.println(squareSearchAlgorithmSupplier);
-
-			ImmutableSudokuPuzzle puzzle = sudokuSolver.solve(this.getGivensPuzzle(),
-					squareSearchAlgorithmSupplier.get());
-			System.out.println(puzzle);
-			if (puzzle != null) {
+			this.updateToInitial();
+			ImmutableSudokuPuzzle solution = sudokuSolver.solve(initialPuzzle, squareSearchAlgorithmSupplier.get());
+			if (solution != null) {
 				try {
-					this.handleCreateNextPuzzle(puzzle);
+					this.handleCreateNextPuzzle(solution);
 				} catch (RuntimeInterruptedException rie) {
 					System.out.println("canceled");
 				}
@@ -209,23 +263,58 @@ public class SudokuSolutionApp extends VizApp {
 	private Node createControls(ComboBox<String> givensComboBox) {
 		ObservableList<Solver> solverOptions = FXCollections.observableArrayList(Solver.values());
 		this.solverComboBox = new ComboBox<>(solverOptions);
-		this.solverComboBox.setValue(Solver.STUDENT);
 
 		ObservableList<SquareSearchAlgorithmSupplier> searchOptions = FXCollections
 				.observableArrayList(SquareSearchAlgorithmSupplier.values());
 		this.searchComboBox = new ComboBox<>(searchOptions);
 
+		List<SquareSearchAlgorithmSupplier> unpropagatedSupportingSearches = Arrays.asList(
+				SquareSearchAlgorithmSupplier.INSTRUCTOR_ROW_MAJOR,
+				SquareSearchAlgorithmSupplier.INSTRUCTOR_FEWEST_OPTIONS_FIRST);
+
+		ObservableList<Propagator> propagatorOptions = FXCollections.observableArrayList(Propagator.values());
+		this.propagatorComboBox = new ComboBox<>(propagatorOptions);
+		this.propagatorComboBox.getSelectionModel().selectedItemProperty()
+				.addListener((options, oldValue, newValue) -> {
+					if (newValue != null) {
+						boolean isDisabled = newValue == Propagator.INSTRUCTOR_UNPROPAGATED;
+						// solverComboBox.setDisable(isDisabled);
+						// searchComboBox.setDisable(isDisabled);
+
+						if (isDisabled) {
+							solverComboBox.setValue(Solver.INSTRUCTOR);
+							solverComboBox.setItems(FXCollections.observableArrayList(Solver.INSTRUCTOR));
+							SquareSearchAlgorithmSupplier search = searchComboBox.getValue();
+							if (unpropagatedSupportingSearches.contains(search)) {
+								// pass
+							} else {
+								searchComboBox.setValue(unpropagatedSupportingSearches.get(0));
+							}
+							searchComboBox.setItems(FXCollections.observableArrayList(unpropagatedSupportingSearches));
+						} else {
+							solverComboBox.setItems(FXCollections.observableArrayList(Solver.values()));
+							searchComboBox.setItems(
+									FXCollections.observableArrayList(SquareSearchAlgorithmSupplier.values()));
+						}
+						this.onCancel();
+						this.updateToInitial();
+					}
+				});
+
+		this.solverComboBox.setValue(Solver.STUDENT);
+		this.propagatorComboBox.setValue(Propagator.STUDENT);
 		this.searchComboBox.setValue(SquareSearchAlgorithmSupplier.STUDENT_FEWEST_OPTIONS_FIRST);
 
 		GridPane result = new GridPane();
-		result.add(givensComboBox, 0, 0, 7, 1);
+		result.add(givensComboBox, 0, 0, 8, 1);
 		result.add(solverComboBox, 0, 1);
-		result.add(searchComboBox, 1, 1);
-		result.add(this.getSolveButton(), 2, 1);
-		result.add(this.getStepButton(), 3, 1);
-		result.add(this.getPauseButton(), 4, 1);
-		result.add(this.getResumeButton(), 5, 1);
-		result.add(this.getCancelButton(), 6, 1);
+		result.add(propagatorComboBox, 1, 1);
+		result.add(searchComboBox, 2, 1);
+		result.add(this.getSolveButton(), 3, 1);
+		result.add(this.getStepButton(), 4, 1);
+		result.add(this.getPauseButton(), 5, 1);
+		result.add(this.getResumeButton(), 6, 1);
+		result.add(this.getCancelButton(), 7, 1);
 		return result;
 	}
 
@@ -234,8 +323,7 @@ public class SudokuSolutionApp extends VizApp {
 		super.start(primaryStage);
 		ComboBox<String> givensComboBox = FxGivensUtils
 				.createGivensComboBox((ObservableValue<? extends String> ov, String oldValue, String newValue) -> {
-					ImmutableSudokuPuzzle puzzle = InstructorSudokuTestUtils.createPuzzle(newValue, this);
-					this.setGivensPuzzle(puzzle);
+					this.setGivens(newValue);
 				});
 
 		BorderPane root = new BorderPane();
@@ -245,14 +333,14 @@ public class SudokuSolutionApp extends VizApp {
 		this.mainPane = this.createMainPane();
 		this.mainPane.init();
 
-		givensComboBox.getSelectionModel().selectFirst();
-
 		root.setCenter(this.mainPane);
 
 		Node controls = this.createControls(givensComboBox);
 		if (controls != null) {
 			root.setTop(controls);
 		}
+
+		givensComboBox.getSelectionModel().selectFirst();
 
 		primaryStage.setTitle(this.getClass().getSimpleName());
 		primaryStage.setScene(scene);
@@ -268,17 +356,14 @@ public class SudokuSolutionApp extends VizApp {
 		});
 	}
 
-	public ImmutableSudokuPuzzle getGivensPuzzle() {
-		return this.givensPuzzle;
+	public boolean isGiven(Square square) {
+		return Character.isDigit(this.givens.charAt(square.getRow() * 9 + square.getColumn()));
 	}
 
-	protected void updateToGivens() {
-		this.mainPane.setGivensPuzzle(givensPuzzle);
-	}
-
-	private void setGivensPuzzle(ImmutableSudokuPuzzle givensPuzzle) {
-		this.givensPuzzle = givensPuzzle;
-		this.updateToGivens();
+	private void setGivens(String givens) {
+		this.givens = givens;
+		this.onCancel();
+		this.updateToInitial();
 	}
 
 	private static String toString(int value) {

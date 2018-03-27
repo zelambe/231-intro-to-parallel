@@ -76,7 +76,7 @@ public abstract class FxSudokuPane extends GridPane {
 	
 	protected abstract Node createSquareNode( Square square );
 	protected abstract void updateSquare( ImmutableSudokuPuzzle puzzle, Square square );
-	public void setGivensPuzzle( ImmutableSudokuPuzzle puzzle ) {
+	public void setInitialPuzzle( ImmutableSudokuPuzzle puzzle ) {
 		for( Square square : Square.values()) {
 			this.updateSquare(puzzle, square);
 		}

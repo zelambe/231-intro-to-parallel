@@ -56,8 +56,7 @@ public class GetValueComprehensiveTest {
 
 	@Test
 	public void test() {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		int row = 0;
 		int column = 0;

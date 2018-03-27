@@ -41,8 +41,7 @@ public class FewestOptionsFirstReturnsNullForSolvedPuzzleTest {
 	public void testSolution() {
 		// source of original givens (now solved): http://norvig.com/hardest.txt
 		String solution = "128547639345869217679213548912486375784352196536791482891624753467935821253178964";
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, solution);
 		Square square = new FewestOptionsFirstSquareSearchAlgorithm().selectNextUnfilledSquare(puzzle);
 		Assert.assertNull("This is a complete puzzle, no square should have been selected but one was selected",

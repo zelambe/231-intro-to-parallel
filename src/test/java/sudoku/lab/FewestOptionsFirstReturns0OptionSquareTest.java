@@ -45,8 +45,7 @@ public class FewestOptionsFirstReturns0OptionSquareTest {
 	public void test() {
 		// source of original givens (now constrained to no hope):
 		// http://norvig.com/hardest.txt
-		String givensWithNoHope = "6.7...8.3.4.7.3.6..3...X....8.5341763742615..156897432.2.67935....38.6...6341....";
-		String a = givensWithNoHope.replaceAll("X", ".");
+		String givensWithNoHope = "6.7...8.3.4.7.3.6..3...X....8.5341763742615..156897432.2.67935....38.6...6341....".replaceAll("X", ".");
 		ConstraintPropagator constraintPropagator = new DefaultConstraintPropagator();
 		ImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givensWithNoHope);
 		Square expectedSquare = Square.A3;

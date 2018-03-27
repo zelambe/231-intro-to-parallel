@@ -46,8 +46,7 @@ import sudoku.lab.DefaultImmutableSudokuPuzzle;
 public class ImmutableSudokuPuzzleTest {
 	@Test
 	public void testValue() {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		Assert.assertEquals("Your puzzle is not initializing with the correct value", puzzle.getValue(Square.A1), 8);
 		Assert.assertEquals("Your puzzle is not initializing with the correct value", puzzle.getValue(Square.A2), 5);
@@ -55,8 +54,7 @@ public class ImmutableSudokuPuzzleTest {
 
 	@Test
 	public void testAlreadySet() {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		Assert.assertTrue("A square should be filled, but it is not", puzzle.isSquareValueDetermined(Square.A1));
 		Assert.assertTrue("A square should be filled, but it is not", puzzle.isSquareValueDetermined(Square.A2));
@@ -67,8 +65,7 @@ public class ImmutableSudokuPuzzleTest {
 
 	@Test
 	public void testOptions() {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		Set<Integer> options = puzzle.getOptions(Square.A3);
 		Assert.assertTrue("You are not getting the correct options for a square",
@@ -77,8 +74,7 @@ public class ImmutableSudokuPuzzleTest {
 
 	@Test
 	public void testCreateNext() {
-		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils
-				.createNonPropagatingConstraintPropagator();
+		ConstraintPropagator constraintPropagator = InstructorSudokuTestUtils.createPeerOnlyConstraintPropagator();
 		DefaultImmutableSudokuPuzzle puzzle = new DefaultImmutableSudokuPuzzle(constraintPropagator, givens);
 		ImmutableSudokuPuzzle next = puzzle.createNext(Square.A3, 3);
 		assertTrue("You did not set the square to any value", next.isSquareValueDetermined(Square.A3));
