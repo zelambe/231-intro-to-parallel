@@ -41,6 +41,11 @@ public class ForallLeggedRace implements LeggedRace {
 	 */
 	@Override
 	public void takeSteps(Participant[] participants, int stepCount) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		for (int i =0; i<stepCount; i++) {
+			final int ii=i;
+			forall (0,participants.length,(j) ->{
+				participants[j].takeStep(ii);
+			});
+		}
 	}
 }

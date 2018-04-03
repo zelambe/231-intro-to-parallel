@@ -104,16 +104,23 @@ public class WordCountConcreteStaticMapReduce {
 	 */
 	static List<KeyValuePair<String, Integer>>[] mapAll(TextSection[] input)
 			throws InterruptedException, ExecutionException {
+		@SuppressWarnings("unchecked")
 		List<KeyValuePair<String, Integer>>[] listArray = new List[input.length];
-		BiConsumer<String, Integer> consumer = (s, a) -> {
-			List<KeyValuePair<String, Integer>> list = new LinkedList<KeyValuePair<String, Integer>>();
-			KeyValuePair<String, Integer> pair = new KeyValuePair(s, a);
-			list.add(pair);
-		};
-		for (TextSection t : input) {
-			map(t, consumer);
+		
+		for (int i = 0; i < input.length; i++) {
+			listArray[i] = new LinkedList(); 
 		}
-		throw new NotYetImplementedException();
+		
+		for (int i = 0; i < input.length; i++) {
+			final int ii = i; 
+			BiConsumer<String, Integer> consumer = (s, a) -> {
+				List<KeyValuePair<String, Integer>> list = new LinkedList<KeyValuePair<String, Integer>>();
+				KeyValuePair<String, Integer> pair = new KeyValuePair<String, Integer>(s, a);
+				listArray[ii].add(pair);
+			};
+			map(input[i], consumer);
+		}
+		return listArray; 
 	}
 
 	/**

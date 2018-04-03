@@ -24,14 +24,19 @@ package mapreduce.framework.lab.matrix;
 import static edu.wustl.cse231s.v5.V5.forall;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import edu.wustl.cse231s.util.KeyValuePair;
 import edu.wustl.cse231s.util.MultiWrapMap;
 import mapreduce.framework.core.MapReduceFramework;
 import mapreduce.framework.core.Mapper;
@@ -115,7 +120,43 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 *             ExecutionException
 	 */
 	Map<K, A>[][] mapAndAccumulateAll(E[] input) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		Map<K, A>[][] mapArray = new Map[this.mapTaskCount][this.reduceTaskCount];
+
+		List<Slice<E[]>> sliceList = new LinkedList<Slice<E[]>>();
+		sliceList = Slices.createNSlices(input, this.mapTaskCount);
+
+		for (int i = 0; i < this.mapTaskCount; i++) { // put a hash map in each index
+			for (int j = 0; j < this.reduceTaskCount; j++) {
+				mapArray[i][j] = new HashMap<K, A>();
+			}
+		}
+
+		// go through slices in parallel
+		forall(sliceList, (slice) -> {
+			// Biconsumer for map
+			BiConsumer<K, V> keyValuePairConsumer = (k, v) -> {
+				KeyValuePair<K, V> pair = new KeyValuePair<K, V>(k, v);
+				if (mapArray[slice.getSliceIndexId()][getReduceIndex(pair.getKey())].get(pair.getKey()) == null) { // if
+																													// the
+																													// index
+																													// is
+																													// null
+					mapArray[slice.getSliceIndexId()][getReduceIndex(pair.getKey())].put(pair.getKey(),
+							collector.supplier().get());
+				}
+				collector.accumulator().accept(
+						mapArray[slice.getSliceIndexId()][getReduceIndex(pair.getKey())].get(pair.getKey()),
+						pair.getValue());
+			};
+
+			for (int i = slice.getMinInclusive(); i < slice.getMaxExclusive(); i++) {
+				mapper.map(input[i], keyValuePairConsumer);
+			}
+		});
+
+		return mapArray;
+
 	}
 
 	/**
@@ -136,7 +177,36 @@ public class MatrixMapReduceFramework<E, K, V, A, R> implements MapReduceFramewo
 	 *             ExecutionException
 	 */
 	Map<K, R> combineAndFinishAll(Map<K, A>[][] input) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		@SuppressWarnings("unchecked")
+		Map<K, R>[] lastRow = new Map[this.reduceTaskCount];
+		for (int ii = 0; ii < this.reduceTaskCount; ii++) {
+			lastRow[ii] = new HashMap<K, R>();
+		}
+
+		forall(0, this.reduceTaskCount, (i) -> { // each column in parallel
+			Map<K, A> tempMap = new HashMap<K, A>();
+			for (int j = 0; j < this.mapTaskCount; j++) { // each row in the column
+				for (K key : input[j][i].keySet()) { // go through all the keys in the index
+					
+					A inputContainer = input[j][i].get(key); // container from input array
+
+					if (tempMap.containsKey(key)) {  //putting the combined result in tempMap
+						tempMap.put(key, collector.combiner().apply(tempMap.get(key), inputContainer));
+					} else {
+						tempMap.put(key, inputContainer);
+					}
+				}
+				
+			}
+			for(K key: tempMap.keySet()) {
+				lastRow[i].put(key, collector.finisher().apply(tempMap.get(key)));
+			}
+
+		});
+
+		MultiWrapMap<K, R> map = new MultiWrapMap<K, R>(lastRow);
+		return map;
+
 	}
 
 	@Override
