@@ -24,8 +24,6 @@ package sudoku.lab;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import sudoku.challenge.PeerEliminationAndUnitAssignmentContraintPropagationTest;
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ ConstraintPropagationAdventureChosenTest.class, ConstraintPropagationEmptyGivensTest.class,
 		ConstraintPropagationDeepCopyTest.class, PeerEliminationContraintPropagationTest.class,

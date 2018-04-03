@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotSame;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
