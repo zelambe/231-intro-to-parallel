@@ -130,7 +130,7 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 			listArray[i] = new LinkedList<KeyValuePair<K, V>>();
 		}
 
-		for (int i = 0; i < input.length; i++) {
+		forall (0,input.length,(i) ->{
 			final int ii = i;
 
 			BiConsumer<K, V> keyValuePairConsumer = (k, v) -> { // takes the pair and puts it into the array
@@ -138,7 +138,8 @@ public final class SimpleMapReduceFramework<E, K, V, A, R> implements MapReduceF
 				listArray[ii].add(pair);
 			};
 			mapper.map(input[i], keyValuePairConsumer);
-		}
+		});
+		
 		return listArray;
 
 	}
