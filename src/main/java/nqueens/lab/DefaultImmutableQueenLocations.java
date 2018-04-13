@@ -49,7 +49,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 */
 	public DefaultImmutableQueenLocations(int boardSize) {
 		this.boardSize = boardSize;
-		this.locations = new int[0];
+		this.locations = new int[0]; 
 	}
 
 	/**
@@ -82,9 +82,8 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 *         should have a new queen in the next row down in the given column.
 	 */
 	@Override
-	public DefaultImmutableQueenLocations createNext(int column) {
-		// TODO implement createNext
-			throw new NotYetImplementedException();
+	public DefaultImmutableQueenLocations createNext(int column) { 
+			return new DefaultImmutableQueenLocations(this, column);
 	}
 
 	/**
@@ -98,8 +97,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 */
 	@Override
 	public int getColumnOfQueenInRow(int row) {
-		// TODO implement getColumnOfQueenInRow
-			throw new NotYetImplementedException();
+		return this.locations[row];
 	}
 
 	/**
@@ -110,9 +108,8 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 *         queen.
 	 */
 	@Override
-	public int getRowCount() {
-		// TODO implement getRowCount
-			throw new NotYetImplementedException();
+	public int getRowCount() { // is this right
+		return this.locations.length;
 	}
 
 	/**
@@ -124,8 +121,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 */
 	@Override
 	public int getBoardSize() {
-		// TODO implement getBoardSize
-			throw new NotYetImplementedException();
+		return this.boardSize;
 	}
 
 	/**
@@ -136,8 +132,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 *            The column where the next queen will be placed.
 	 */
 	@Override
-	public boolean isNextRowThreatFree(int column) {
-		// TODO implement isNextRowThreatFree
-			throw new NotYetImplementedException();
+	public boolean isNextRowThreatFree(int column) { //confundido
+		return isCandidateThreatFree(this.locations.length,column);
 	}
 }

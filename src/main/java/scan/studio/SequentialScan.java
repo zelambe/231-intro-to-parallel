@@ -23,6 +23,8 @@
 package scan.studio;
 
 import edu.wustl.cse231s.NotYetImplementedException;
+import scan.core.ArraysHolder;
+import scan.core.PowersOfTwoLessThan;
 import scan.core.Scan;
 
 /**
@@ -32,7 +34,17 @@ import scan.core.Scan;
 public class SequentialScan implements Scan {
 	@Override
 	public int[] sumScan(int[] data) {
-		throw new NotYetImplementedException();
+		ArraysHolder holder = new ArraysHolder(data);
+		for (int i=0; i<holder.getSrc().length; i++) {
+			if (i==0) {
+				holder.getDst()[i]= holder.getSrc()[i];
+			}else {
+				holder.getDst()[i]= holder.getSrc()[i]+ holder.getDst()[i-1];
+
+			}
+		}
+		return holder.getDst();
+		
 	}
 	
 	@Override

@@ -61,8 +61,20 @@ public class SequentialNQueens {
 	 */
 	private static void placeQueenInRow(MutableInt count, MutableQueenLocations queenLocations, int row) {
 		doWork(1);
-		// TODO implement placeQueenInRow
-			throw new NotYetImplementedException();
+		int size =queenLocations.getBoardSize();
+		if(row<size) {
+			for (int i=0; i<size; i++) {
+				if(queenLocations.isCandidateThreatFree(row, i)) {
+					queenLocations.setColumnOfQueenInRow(row, i);
+					if(row==size-1 &&i==size-1){
+						count.add(1);
+					}
+				}
+			}
+			placeQueenInRow(count,queenLocations,row+1);
+		}
+		
+
 	}
 
 	public static int countSolutions(MutableQueenLocations queenLocations) {
