@@ -37,23 +37,22 @@ public class SequentialNQueens {
 	private SequentialNQueens() {
 		throw new IntendedForStaticAccessOnlyError();
 	}
-	
+
 	/**
 	 * For sequential n-queens, implement the method placeQueenInRow. Note that
-	 * countSolutions contains a call to placeQueenInRow(count, queenLocations,
-	 * 0), and countSolutions is called in TestNQueens. This method is
-	 * recursive; that is, it should place a queen in the given row and then
-	 * call itself on the next row.
+	 * countSolutions contains a call to placeQueenInRow(count, queenLocations, 0),
+	 * and countSolutions is called in TestNQueens. This method is recursive; that
+	 * is, it should place a queen in the given row and then call itself on the next
+	 * row.
 	 * 
 	 * @param count
-	 *            An instance of MutableInt for keeping track of how many
-	 *            solutions you find. Increment it every time you find a
-	 *            solution.
+	 *            An instance of MutableInt for keeping track of how many solutions
+	 *            you find. Increment it every time you find a solution.
 	 * 
 	 * @param queenLocations
 	 *            A representation of the chess board containing the queens. For
-	 *            more information about the MutableQueenLocations class,
-	 *            ctrl-click or command-click on "MutableQueenLocations" below.
+	 *            more information about the MutableQueenLocations class, ctrl-click
+	 *            or command-click on "MutableQueenLocations" below.
 	 * 
 	 * @param row
 	 *            The index of the row you are placing a queen into.
@@ -61,19 +60,18 @@ public class SequentialNQueens {
 	 */
 	private static void placeQueenInRow(MutableInt count, MutableQueenLocations queenLocations, int row) {
 		doWork(1);
-		int size =queenLocations.getBoardSize();
-		if(row<size) {
-			for (int i=0; i<size; i++) {
-				if(queenLocations.isCandidateThreatFree(row, i)) {
+		int size = queenLocations.getBoardSize();
+		if (row < size) {
+			for (int i = 0; i < size; i++) {
+				if (queenLocations.isCandidateThreatFree(row, i)) {
 					queenLocations.setColumnOfQueenInRow(row, i);
-					if(row==size-1 &&i==size-1){
-						count.add(1);
-					}
-				}
+					placeQueenInRow(count, queenLocations, row + 1);
+				} 
 			}
-			placeQueenInRow(count,queenLocations,row+1);
 		}
-		
+		else {
+			count.add(1);
+		}
 
 	}
 

@@ -108,7 +108,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 *         queen.
 	 */
 	@Override
-	public int getRowCount() { // is this right
+	public int getRowCount() { 
 		return this.locations.length;
 	}
 
@@ -132,7 +132,7 @@ public final class DefaultImmutableQueenLocations extends AbstractQueenLocations
 	 *            The column where the next queen will be placed.
 	 */
 	@Override
-	public boolean isNextRowThreatFree(int column) { //confundido
+	public boolean isNextRowThreatFree(int column) { 
 		return isCandidateThreatFree(this.locations.length,column);
 	}
 }

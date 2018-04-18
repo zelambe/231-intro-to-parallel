@@ -29,6 +29,8 @@ import static edu.wustl.cse231s.v5.V5.register;
 
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.v5.api.FinishAccumulator;
@@ -65,10 +67,23 @@ public class ParallelNQueens {
 	private static void placeQueenInRow(FinishAccumulator<Integer> acc, ImmutableQueenLocations queenLocations)
 			throws InterruptedException, ExecutionException {
 		doWork(1);
-		// TODO implement parallel placeQueenInRow
-			// Note: implement the unfinished methods in ImmutableQueenLocations
-			// first
-			throw new NotYetImplementedException();
+		
+		int size = queenLocations.getBoardSize();
+		int row = queenLocations.getRowCount();
+
+		if (row < size) {
+			forasync(0, size,(i) -> {
+				if(queenLocations.isCandidateThreatFree(row, i)) {
+					placeQueenInRow(acc, queenLocations.createNext(i));
+				}
+
+			});
+
+		}
+		else {
+			acc.put(1);
+		}
+
 	}
 
 	/**
@@ -82,7 +97,10 @@ public class ParallelNQueens {
 	 */
 	public static int countSolutions(ImmutableQueenLocations queenLocations)
 			throws InterruptedException, ExecutionException {
-		// TODO implement countSolutions
-			throw new NotYetImplementedException();
+		FinishAccumulator<Integer> acc = newIntegerFinishAccumulator(NumberReductionOperator.SUM); // ? lol
+		finish (register(acc), () ->{
+			placeQueenInRow(acc, queenLocations);
+		});
+		return acc.get();
 	}
 }
