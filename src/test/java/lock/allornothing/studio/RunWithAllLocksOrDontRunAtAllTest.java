@@ -202,13 +202,15 @@ public class RunWithAllLocksOrDontRunAtAllTest {
 	}
 
 	@Test
-	public void testF_OnlyUnlockingImmediatelyPreviouslyAcquiredLocks() throws InterruptedException, ExecutionException {
+	public void testF_OnlyUnlockingImmediatelyPreviouslyAcquiredLocks()
+			throws InterruptedException, ExecutionException {
 		List<ReentrantLock> locks = new ArrayList<>();
 		for (int i = 0; i < 7; i++) {
 			locks.add(new ReentrantLock());
 		}
-		
-		//acquiring this lock will prevent the runWithAllLocksOrDontRunAtAll thread from succeeding
+
+		// acquiring this lock will prevent the runWithAllLocksOrDontRunAtAll thread
+		// from succeeding
 		Lock lock = locks.get(3);
 		lock.lock();
 
@@ -219,15 +221,38 @@ public class RunWithAllLocksOrDontRunAtAllTest {
 			// runWithAllLocksOrDontRunAtAll so it should not be unlocked.
 			int indexOfLock = 5;
 			locks.get(indexOfLock).lock();
-			isSuccessful.setValue(LockUtils.runWithAllLocksOrDontRunAtAll(locks, ()->{
+			isSuccessful.setValue(LockUtils.runWithAllLocksOrDontRunAtAll(locks, () -> {
 				isBodyInvoked.setTrue();
 			}));
-			assertTrue("Only unlock the locks you successfully acquired.  Do NOT invoke unlockAll.", locks.get(indexOfLock).isHeldByCurrentThread());
+			assertTrue("Only unlock the locks you successfully acquired.  Do NOT invoke unlockAll.",
+					locks.get(indexOfLock).isHeldByCurrentThread());
 		});
 		startAndJoinThread(thread);
 		assertNotNull(isSuccessful.getValue());
 		assertFalse(isSuccessful.getValue());
 		assertFalse(isBodyInvoked.booleanValue());
+	}
+
+	@Test
+	public void testG_TryFinally() throws InterruptedException, ExecutionException {
+		class CustomException extends RuntimeException {
+			private static final long serialVersionUID = 1L;
+		}
+
+		List<ReentrantLock> locks = Arrays.asList(new ReentrantLock(), new ReentrantLock(), new ReentrantLock());
+		Throwable cause = null;
+		try {
+			startAndJoinThreadRunWithAllLocksOrDontRunAtAll(locks, () -> {
+				throw new CustomException();
+			});
+		} catch (ExecutionException ee) {
+			cause = ee.getCause();
+		}
+		assertNotNull(cause);
+		assertTrue(cause instanceof CustomException);
+		for (ReentrantLock lock : locks) {
+			assertFalse("Use the try/finally to unlock all acquired locks in the finally block.", lock.isLocked());
+		}
 	}
 
 	private static Thread startAndJoinThread(Runnable body) throws InterruptedException, ExecutionException {
