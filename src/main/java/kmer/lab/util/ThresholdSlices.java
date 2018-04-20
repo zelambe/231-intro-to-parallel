@@ -28,6 +28,7 @@ import java.util.List;
 
 import edu.wustl.cse231s.NotYetImplementedException;
 import kmer.core.KMerUtils;
+import midpoint.assignment.MidpointUtils;
 import slice.core.Slice;
 
 /**
@@ -57,7 +58,15 @@ public class ThresholdSlices {
 	 */
 	private static void addToCollectionKernel(Collection<Slice<byte[]>> slices, byte[] sequence, int min, int max,
 			int sliceThreshold) {
-		throw new NotYetImplementedException();
+		int mid = MidpointUtils.calculateMidpoint(max, min);
+		if (sequence.length < sliceThreshold) {
+			Slice<byte[]> slice = new Slice<byte[]> (sequence, -1, min, max);
+			slices.add (slice);
+		}
+		else {
+			addToCollectionKernel(slices, sequence,min,mid,sliceThreshold);
+			addToCollectionKernel(slices, sequence,mid,max,sliceThreshold);
+		}
 	}
 
 	/**
@@ -77,7 +86,11 @@ public class ThresholdSlices {
 	public static List<Slice<byte[]>> createSlicesBelowThreshold(List<byte[]> sequences, int k,
 			int sliceThreshold) {
 		List<Slice<byte[]>> list = new LinkedList<>();
-		throw new NotYetImplementedException();
+		for (byte[] sequence : sequences) {
+			addToCollectionKernel(list,sequence,0,sequence.length-k+1, sliceThreshold);
+
+		}
+		return list;
 	}
 
 	/**
@@ -95,7 +108,10 @@ public class ThresholdSlices {
 	 * @return a reasonable threshold
 	 */
 	public static int calculateReasonableThreshold(List<byte[]> sequences, int k) {
-		throw new NotYetImplementedException();
+		int processors= Runtime.getRuntime().availableProcessors();
+		int sum = KMerUtils.calculateSumOfAllKMers(sequences,k);
+		
+		return sum/processors;
 	}
 
 	public static List<Slice<byte[]>> createSlicesBelowReasonableThreshold(List<byte[]> sequences, int k) {
