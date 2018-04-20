@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (C) 2016-2017 Dennis Cosgrove
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -59,7 +60,8 @@ public class ThresholdSlices {
 	private static void addToCollectionKernel(Collection<Slice<byte[]>> slices, byte[] sequence, int min, int max,
 			int sliceThreshold) {
 		int mid = MidpointUtils.calculateMidpoint(max, min);
-		if (sequence.length < sliceThreshold) {
+		int length = max-min;
+		if (length < sliceThreshold) {
 			Slice<byte[]> slice = new Slice<byte[]> (sequence, -1, min, max);
 			slices.add (slice);
 		}
