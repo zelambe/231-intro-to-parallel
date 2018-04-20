@@ -49,10 +49,20 @@ public class Course {
 	}
 
 	public boolean addIfSpace(Student student) {
-		throw new NotYetImplementedException();
+		synchronized(this.students) {
+			if (this.students.size() < this.limit) {
+				this.students.add(student);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	}
 
 	public boolean drop(Student student) {
-		throw new NotYetImplementedException();
+		synchronized(this.students) {
+			return this.students.remove(student);
+	}
 	}
 }
