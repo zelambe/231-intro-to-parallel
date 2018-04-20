@@ -44,6 +44,13 @@ public class FewestOptionsFirstSquareSearchAlgorithm implements SquareSearchAlgo
 	 */
 	@Override
 	public Square selectNextUnfilledSquare(SudokuPuzzle puzzle) {
-		throw new NotYetImplementedException();
+		Square smallest = null;
+		for (Square s : Square.values()) {
+				if (puzzle.getOptions(s).size()< puzzle.getOptions(smallest).size()) {
+					smallest = s;
+				}
+			}
+			
+		return smallest;
 	}
 }

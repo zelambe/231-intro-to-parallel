@@ -44,6 +44,12 @@ public class RowMajorSquareSearchAlgorithm implements SquareSearchAlgorithm {
 	 */
 	@Override
 	public Square selectNextUnfilledSquare(SudokuPuzzle puzzle) {
-		throw new NotYetImplementedException();
+		for (Square s :Square.values()) {
+			if(puzzle.getOptions(s).size()>1) {
+				return s;
+			}
+		}
+		return null;
+		
 	}
 }

@@ -1,6 +1,6 @@
 Pledge
 ------
-
+Thanks to Hyunrae for helping me with parallel nqueens!!! I was complicating my if statements lol
 
 Acknowledgments and Citations
 -----------------------------

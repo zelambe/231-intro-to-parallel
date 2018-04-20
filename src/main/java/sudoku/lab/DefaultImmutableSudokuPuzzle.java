@@ -53,7 +53,8 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 * @param givens
 	 */
 	public DefaultImmutableSudokuPuzzle(ConstraintPropagator constraintPropagator, String givens) {
-		throw new NotYetImplementedException();
+		this.constraintPropagator = getConstraintPropagator();
+		this.optionSets = constraintPropagator.createOptionSetsFromGivens(givens);
 	}
 
 	/**
@@ -70,7 +71,8 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 *            the value to put in square
 	 */
 	private DefaultImmutableSudokuPuzzle(DefaultImmutableSudokuPuzzle other, Square square, int value) {
-		throw new NotYetImplementedException();
+		this.constraintPropagator = getConstraintPropagator();
+		this.optionSets = other.constraintPropagator.createNextOptionSets(other.optionSets, square, value);
 	}
 
 	public ConstraintPropagator getConstraintPropagator() {
@@ -79,7 +81,7 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 
 	@Override
 	public ImmutableSudokuPuzzle createNext(Square square, int value) {
-		throw new NotYetImplementedException();
+		return new DefaultImmutableSudokuPuzzle(this, square, value);
 	}
 
 	/**
@@ -90,7 +92,12 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 */
 	@Override
 	public int getValue(Square square) {
-		throw new NotYetImplementedException();
+		if (this.optionSets.get(square).size()==1) {
+			return this.optionSets.get(square).first();
+		}
+		else {
+			return 0;
+		}
 	}
 
 	/**
@@ -100,7 +107,7 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 */
 	@Override
 	public SortedSet<Integer> getOptions(Square square) {
-		throw new NotYetImplementedException();
+		return this.optionSets.get(square);
 	}
 
 	@Override
