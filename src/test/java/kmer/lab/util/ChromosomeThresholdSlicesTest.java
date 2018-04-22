@@ -32,12 +32,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.wustl.cse231s.bioinformatics.io.resource.ChromosomeResource;
+import edu.wustl.cse231s.junit.JUnitUtils;
 import kmer.lab.rubric.KMerRubric;
 import kmer.lab.util.ThresholdSlices;
 import slice.core.Slice;
@@ -57,6 +60,9 @@ public class ChromosomeThresholdSlicesTest {
 		this.chromosomeResource = chromosomeResource;
 		this.k = k;
 	}
+	
+	@Rule
+	public TestRule timeout = JUnitUtils.createTimeoutRule(10);
 
 	@Test
 	public void test() throws IOException {
