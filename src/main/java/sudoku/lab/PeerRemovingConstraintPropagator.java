@@ -56,8 +56,10 @@ public class PeerRemovingConstraintPropagator implements ConstraintPropagator {
 		}
 		
 		for (int k=0; k<9; k++) {
-			for (int l =0; l<9; l++) {
-				associateValueWithSquareAndRemoveFromPeers(map, Square.valueOf(k,l), values[k][l]);
+			for (int m =0; m<9; m++) {
+				if(values[k][m]!= 0) {
+					associateValueWithSquareAndRemoveFromPeers(map, Square.valueOf(k,m), values[k][m]);
+				}
 			}
 		}
 		return map;

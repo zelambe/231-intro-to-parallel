@@ -50,8 +50,8 @@ public class LongConcurrentHashMapKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
-		//ConcurrentHashMap map = new ConcurrentHashMap();
-		throw new NotYetImplementedException();
+		
+	 throw new NotYetImplementedException();
 	}
 
 }

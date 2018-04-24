@@ -53,7 +53,7 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 * @param givens
 	 */
 	public DefaultImmutableSudokuPuzzle(ConstraintPropagator constraintPropagator, String givens) {
-		this.constraintPropagator = getConstraintPropagator();
+		this.constraintPropagator = constraintPropagator;
 		this.optionSets = constraintPropagator.createOptionSetsFromGivens(givens);
 	}
 
@@ -71,12 +71,12 @@ public final class DefaultImmutableSudokuPuzzle implements ImmutableSudokuPuzzle
 	 *            the value to put in square
 	 */
 	private DefaultImmutableSudokuPuzzle(DefaultImmutableSudokuPuzzle other, Square square, int value) {
-		this.constraintPropagator = getConstraintPropagator();
-		this.optionSets = other.constraintPropagator.createNextOptionSets(other.optionSets, square, value);
+		this.constraintPropagator = other.getConstraintPropagator();
+		this.optionSets = this.constraintPropagator.createNextOptionSets(other.optionSets, square, value);
 	}
 
 	public ConstraintPropagator getConstraintPropagator() {
-		return constraintPropagator;
+		return this.constraintPropagator;
 	}
 
 	@Override
