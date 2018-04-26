@@ -35,6 +35,7 @@ import edu.wustl.cse231s.v5.V5;
 import sudoku.core.ImmutableSudokuPuzzle;
 import sudoku.core.Square;
 import sudoku.core.SquareSearchAlgorithm;
+import sudoku.core.SudokuPuzzle;
 
 /**
  * Your sudoku-solving algorithm. This is where you will write your recursive
@@ -61,7 +62,10 @@ public class ParallelSudoku {
 	public static ImmutableSudokuPuzzle solve(ImmutableSudokuPuzzle puzzle, SquareSearchAlgorithm squareSearchAlgorithm)
 			throws InterruptedException, ExecutionException {
 		MutableObject<ImmutableSudokuPuzzle> solution = new MutableObject<>(null);
-		throw new NotYetImplementedException();
+		finish (() ->{
+			solveKernel(solution,puzzle,squareSearchAlgorithm);
+		});
+		return solution.getValue();
 	}
 
 	/**
@@ -95,8 +99,25 @@ public class ParallelSudoku {
 	 */
 	private static void solveKernel(MutableObject<ImmutableSudokuPuzzle> solution, ImmutableSudokuPuzzle puzzle,
 			SquareSearchAlgorithm squareSearchAlgorithm) throws InterruptedException, ExecutionException {
+		
+		Square square = squareSearchAlgorithm.selectNextUnfilledSquare(puzzle);
+//		if(puzzle.getOptions(square).size()==0 && puzzle.isSquareValueDetermined(square)==false) {
+//			solution.setValue(puzzle);
+//		}
+		if (square ==null) {
+			solution.setValue(puzzle);
+		}else {
+			forasync (puzzle.getOptions(square),(i) ->{
+				if(puzzle.isSquareValueDetermined(square)) {
+				}
+				else {
+					solveKernel(solution,puzzle.createNext(square, i),squareSearchAlgorithm);
+				}
+			});
+	
+		}
+		
 		doWork(1);
-		throw new NotYetImplementedException();
 	}
 
 }
