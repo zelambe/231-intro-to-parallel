@@ -19,37 +19,64 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
+package connectfour.core;
 
-package mapreduce;
-
-import java.io.IOException;
-
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-import mapreduce.apps.cards.studio.CardMapperNumericOnlyTest;
-import mapreduce.apps.cards.studio.CardMapperTest;
-import mapreduce.apps.kmer.studio.KMerMapperTest;
-import mapreduce.apps.kmer.studio.KMerPointedMapperTest;
-import mapreduce.apps.kmer.studio.KMerSpecificKMapperTest;
-import mapreduce.apps.wordcount.core.WordCountUtils;
-import mapreduce.apps.wordcount.studio.IntegerSumClassicReducerPointedTest;
-import mapreduce.apps.wordcount.studio.WordCountMapperLetterCaseTest;
-import mapreduce.apps.wordcount.studio.WordCountMapperStressTest;
-import mapreduce.apps.wordcount.studio.WordCountReducerStressTest;
+import java.util.Objects;
 
 /**
+ * @author Finn Voichick
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({ WordCountMapperLetterCaseTest.class, WordCountMapperStressTest.class,
-		CardMapperNumericOnlyTest.class, CardMapperTest.class, IntegerSumClassicReducerPointedTest.class,
-		WordCountReducerStressTest.class, KMerSpecificKMapperTest.class, /*KMerPointedMapperTest.class,*/
-		KMerMapperTest.class })
-public class IntSumStudioTestSuite {
-	@BeforeClass
-	public static void setUp() throws IOException {
-		WordCountUtils.downloadWordResources();
+public class Config {
+	public static class Builder {
+		private Heuristic heuristic;
+		private int maxDepth;
+		private int maxParallelDepth;
+
+		public Builder heuristic(Heuristic heuristic) {
+			this.heuristic = heuristic;
+			return this;
+		}
+
+		public Builder maxDepth(int maxDepth) {
+			this.maxDepth = maxDepth;
+			return this;
+		}
+
+		public Builder maxParallelDepth(int maxParallelDepth) {
+			this.maxParallelDepth = maxParallelDepth;
+			return this;
+		}
+
+		public Config build() {
+			Objects.requireNonNull(heuristic);
+			if (maxParallelDepth > maxDepth) {
+				throw new RuntimeException(
+						String.format("maxParallelDepth(%d) greater than maxDepth(%d)", maxParallelDepth, maxDepth));
+			}
+			return new Config(this);
+		}
+	}
+
+	private final Heuristic heuristic;
+	private final int maxDepth;
+	private final int maxParallelDepth;
+
+	private Config(Builder builder) {
+		this.heuristic = builder.heuristic;
+		this.maxDepth = builder.maxDepth;
+		this.maxParallelDepth = builder.maxParallelDepth;
+	}
+
+	public Heuristic getHeuristic() {
+		return heuristic;
+	}
+
+	public int getMaxDepth() {
+		return maxDepth;
+	}
+
+	public int getMaxParallelDepth() {
+		return maxParallelDepth;
 	}
 }
