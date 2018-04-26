@@ -27,7 +27,7 @@ import connectfour.core.Player;
 import edu.wustl.cse231s.NotYetImplementedException;
 
 /**
- * @author __STUDENT_NAME__
+ * @author Zahra Lambe
  * @author Finn Voichick
  * @author Dennis Cosgrove (http://www.cse.wustl.edu/~cosgroved/)
  */
