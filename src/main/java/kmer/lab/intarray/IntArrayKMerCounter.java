@@ -28,6 +28,8 @@ import kmer.core.KMerCount;
 import kmer.core.KMerCounter;
 import kmer.core.KMerUtils;
 import kmer.core.array.IntArrayKMerCount;
+import kmer.lab.util.ThresholdSlices;
+import slice.core.Slice;
 
 /**
  * A sequential implementation of {@link KMerCounter} that uses an int array,
@@ -41,7 +43,20 @@ public class IntArrayKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) {
-		throw new NotYetImplementedException();
-	}
+		int[] array = new int[(int)KMerUtils.calculateSumOfAllKMers(sequences, k)];
+		List<Slice<byte[]>> sliceList = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
 
+		int index = 0;
+		for (Slice<byte[]> s : sliceList) {
+			byte[] sequence = s.getOriginalUnslicedData();
+			for (int i = s.getMinInclusive(); i < s.getMaxExclusive(); i++) {
+				int KMer = KMerUtils.toPackedInt(sequence, i, k);
+				array[index] = KMer;
+				index++;
+			}
+		}
+
+		return new IntArrayKMerCount(k, array);
+
+	}
 }

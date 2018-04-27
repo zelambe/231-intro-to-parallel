@@ -50,8 +50,33 @@ public class LongConcurrentHashMapKMerCounter implements KMerCounter {
 
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
+		//ask about map size
+		//also ask about map too
 		
-	 throw new NotYetImplementedException();
+		Map<Long,Integer> map = new ConcurrentHashMap<Long,Integer>();
+
+		List<Slice<byte[]>> sliceList = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+				
+		forall (sliceList,(slice) ->{
+			byte[] sequence = slice.getOriginalUnslicedData();
+			for(int i=slice.getMinInclusive(); i<slice.getMaxExclusive(); i++) {
+				Long kMer = KMerUtils.toPackedLong(sequence, i, k);
+				
+				map.compute(kMer,(key,val) ->{
+					key = kMer;
+					if (val==null) {
+						val =1;
+					}else {
+						val= val+1;
+					}
+				return val;
+				});
+			}
+			
+		});
+		
+		return new MapKMerCount<>(k, map, LongKMerCodec.INSTANCE); //from wiki ask about it
+		
 	}
 
 }

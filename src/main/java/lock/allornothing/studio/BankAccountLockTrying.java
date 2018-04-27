@@ -21,6 +21,9 @@
  ******************************************************************************/
 package lock.allornothing.studio;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import edu.wustl.cse231s.IntendedForStaticAccessOnlyError;
 import edu.wustl.cse231s.NotYetImplementedException;
 import edu.wustl.cse231s.concurrent.Interruptible;
@@ -59,7 +62,28 @@ public class BankAccountLockTrying {
 	 * @return the result of the attempted transaction
 	 */
 	public static TransferResult tryTransferMoney(AccountWithLock sender, AccountWithLock recipient, int amount) {
-		throw new NotYetImplementedException();
+		ReentrantLock senderLock = (ReentrantLock) sender.getLock();
+		ReentrantLock recipientLock = (ReentrantLock) recipient.getLock();
+		
+		if(senderLock.tryLock()) {
+			try {
+				if(recipientLock.tryLock()) {
+					try {
+						return TransferUtils.checkBalanceAndTransfer(sender, recipient, amount);
+					}finally {
+						recipientLock.unlock();
+					}
+				}else {
+					return TransferResult.UNABLE_TO_ATTEMPT_AT_THIS_TIME;
+				}
+				
+			}finally {
+				senderLock.unlock();
+			}
+			
+		}else {
+			return TransferResult.UNABLE_TO_ATTEMPT_AT_THIS_TIME;
+		}
 	}
 
 	/**
