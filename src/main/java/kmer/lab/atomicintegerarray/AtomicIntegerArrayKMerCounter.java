@@ -25,6 +25,7 @@ import static edu.wustl.cse231s.v5.V5.forall;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import edu.wustl.cse231s.NotYetImplementedException;
@@ -46,6 +47,17 @@ import slice.core.Slice;
 public class AtomicIntegerArrayKMerCounter implements KMerCounter {
 	@Override
 	public KMerCount parse(List<byte[]> sequences, int k) throws InterruptedException, ExecutionException {
-		throw new NotYetImplementedException();
+		AtomicIntegerArray array = new AtomicIntegerArray((int)KMerUtils.calculatePossibleKMers(k));
+		List<Slice<byte[]>> sliceList = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
+
+		forall (sliceList,(sequence) ->{
+			for (int i= sequence.getMinInclusive(); i< sequence.getMaxExclusive(); i++) {
+				int index = KMerUtils.toPackedInt(sequence.getOriginalUnslicedData(), i, k);
+				array.getAndAdd(index, 1);
+			}
+		});
+
+	return new AtomicIntegerArrayKMerCount(k, array);
+
 	}
 }

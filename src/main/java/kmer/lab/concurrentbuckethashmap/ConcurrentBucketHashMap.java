@@ -22,11 +22,13 @@
 package kmer.lab.concurrentbuckethashmap;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -47,37 +49,75 @@ import net.jcip.annotations.ThreadSafe;
 
 	@SuppressWarnings("unchecked")
 	public ConcurrentBucketHashMap(int bucketCount) {
+		buckets = new List[bucketCount];
+		for (int i=0; i< buckets.length; i++) {
+			buckets[i] = new LinkedList<Entry<K,V>>();
+		}
+		locks= new ReadWriteLock[bucketCount]; //???? just guessing
+		
 		throw new NotYetImplementedException();
 	}
 
 	private int getIndex(Object key) {
-		throw new NotYetImplementedException();
+		int hashCode = key.hashCode();
+		return Math.floorMod(hashCode, buckets.length);
 	}
 
 	private List<Entry<K, V>> getBucket(Object key) {
-		throw new NotYetImplementedException();
+		int bucketIndex = getIndex(key);
+		return buckets[bucketIndex];
 	}
 
 	private ReadWriteLock getLock(Object key) {
-		throw new NotYetImplementedException();
+		return locks[getIndex(key)];
 	}
 
-	private static <K, V> Entry<K, V> getEntry(List<Entry<K, V>> bucket, Object key) {
+	private static <K, V> Entry<K, V> getEntry(List<Entry<K, V>> bucket, Object key) { // what
+		for(Entry<K,V> e : bucket) {
+			if(e.getKey() == key) {
+				return e;
+			}else {
+				return null;
+			}
+		}
 		throw new NotYetImplementedException();
+
 	}
 
 	@Override
-	public V get(Object key) {
-		throw new NotYetImplementedException();
+	public V get(Object key) { //not thread safe yet
+		Collection<Entry<K,V>> bucket =getBucket(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		while (mapIterator.hasNext() == true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				return pair.getValue();
+			}
+		}
+		return null;
 	}
 
 	@Override
-	public V put(K key, V value) {
-		throw new NotYetImplementedException();
-	}
+	public V put(K key, V value) { //not thread safe yet.
+		Collection<Entry<K,V>> bucket =getBucket(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		while(mapIterator.hasNext()==true) {
+			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+			if (pair.getKey().equals(key)) {
+				V oldValue = pair.getValue();
+				pair.setValue(value);
+				return oldValue;
+			}
+		}
+		bucket.add(new KeyMutableValuePair<>(key,value));
+		return null;	
+		}
 
 	@Override
-	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) { //what am i computing lol?
+//		 (key(k,v) ->{
+//			 
+//		});
 		throw new NotYetImplementedException();
 	}
 

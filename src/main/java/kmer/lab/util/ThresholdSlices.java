@@ -90,7 +90,6 @@ public class ThresholdSlices {
 		List<Slice<byte[]>> list = new LinkedList<>();
 		for (byte[] sequence : sequences) {
 			addToCollectionKernel(list,sequence,0,sequence.length-k+1, sliceThreshold);
-
 		}
 		return list;
 	}

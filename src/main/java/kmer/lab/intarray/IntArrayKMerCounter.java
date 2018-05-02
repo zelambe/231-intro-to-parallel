@@ -42,17 +42,14 @@ import slice.core.Slice;
 public class IntArrayKMerCounter implements KMerCounter {
 
 	@Override
-	public KMerCount parse(List<byte[]> sequences, int k) {
-		int[] array = new int[(int)KMerUtils.calculateSumOfAllKMers(sequences, k)];
+	public KMerCount parse(List<byte[]> sequences, int k) { 
+		int[] array = new int[(int)KMerUtils.calculatePossibleKMers(k)];
 		List<Slice<byte[]>> sliceList = ThresholdSlices.createSlicesBelowReasonableThreshold(sequences, k);
 
-		int index = 0;
-		for (Slice<byte[]> s : sliceList) {
-			byte[] sequence = s.getOriginalUnslicedData();
-			for (int i = s.getMinInclusive(); i < s.getMaxExclusive(); i++) {
-				int KMer = KMerUtils.toPackedInt(sequence, i, k);
-				array[index] = KMer;
-				index++;
+		for (Slice<byte[]> sequence : sliceList) {
+			for (int i= sequence.getMinInclusive(); i< sequence.getMaxExclusive(); i++) {
+				int index = KMerUtils.toPackedInt(sequence.getOriginalUnslicedData(), i, k);
+				array[index]++;
 			}
 		}
 
