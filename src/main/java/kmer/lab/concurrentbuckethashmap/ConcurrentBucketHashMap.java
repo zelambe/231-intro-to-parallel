@@ -50,12 +50,15 @@ import net.jcip.annotations.ThreadSafe;
 	@SuppressWarnings("unchecked")
 	public ConcurrentBucketHashMap(int bucketCount) {
 		buckets = new List[bucketCount];
-		for (int i=0; i< buckets.length; i++) {
-			buckets[i] = new LinkedList<Entry<K,V>>();
+		for (int i = 0; i < buckets.length; i++) {
+			buckets[i] = new LinkedList<Entry<K, V>>();
 		}
-		locks= new ReadWriteLock[bucketCount]; //???? just guessing
-		
-		throw new NotYetImplementedException();
+		locks = new ReadWriteLock[bucketCount]; // ???? just guessing
+		for (int i = 0; i < locks.length; i++) {
+			ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+			locks[i] = lock;
+		}
+
 	}
 
 	private int getIndex(Object key) {
@@ -73,51 +76,71 @@ import net.jcip.annotations.ThreadSafe;
 	}
 
 	private static <K, V> Entry<K, V> getEntry(List<Entry<K, V>> bucket, Object key) { // what
-		for(Entry<K,V> e : bucket) {
-			if(e.getKey() == key) {
+		for (Entry<K, V> e : bucket) {
+			if (e.getKey() == key) {
 				return e;
-			}else {
-				return null;
-			}
-		}
-		throw new NotYetImplementedException();
-
-	}
-
-	@Override
-	public V get(Object key) { //not thread safe yet
-		Collection<Entry<K,V>> bucket =getBucket(key);
-		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
-		while (mapIterator.hasNext() == true) {
-			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
-			if (pair.getKey().equals(key)) {
-				return pair.getValue();
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public V put(K key, V value) { //not thread safe yet.
-		Collection<Entry<K,V>> bucket =getBucket(key);
-		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
-		while(mapIterator.hasNext()==true) {
-			KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
-			if (pair.getKey().equals(key)) {
-				V oldValue = pair.getValue();
-				pair.setValue(value);
-				return oldValue;
+	public V get(Object key) { // thread safeish
+		ReadWriteLock lock = getLock(key);
+		if (lock.readLock().tryLock()) {
+			lock.readLock().unlock();
+			List<Entry<K, V>> bucket = getBucket(key);
+			Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+			while (mapIterator.hasNext() == true) {
+				KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+				if (pair.getKey().equals(key)) {
+					lock.readLock().lock();
+					return pair.getValue();
+				}
 			}
 		}
-		bucket.add(new KeyMutableValuePair<>(key,value));
-		return null;	
-		}
+		return null;
+	}
 
 	@Override
-	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) { //what am i computing lol?
-//		 (key(k,v) ->{
-//			 
-//		});
+	public V put(K key, V value) { // thread safeish
+		Collection<Entry<K, V>> bucket = getBucket(key);
+		Iterator<Entry<K, V>> mapIterator = bucket.iterator();
+		ReadWriteLock lock = getLock(key);
+		if(lock.readLock().tryLock()) {
+			if(lock.writeLock().tryLock()) {
+				lock.readLock().unlock();
+				lock.writeLock().unlock();
+				
+				while (mapIterator.hasNext() == true) {
+					KeyMutableValuePair<K, V> pair = (KeyMutableValuePair<K, V>) mapIterator.next();
+					if (pair.getKey().equals(key)) {
+						V oldValue = pair.getValue();
+						pair.setValue(value);
+						lock.readLock().lock();
+						lock.writeLock().lock();
+						return oldValue;
+					}
+				}
+				bucket.add(new KeyMutableValuePair<>(key, value));
+				lock.readLock().lock();
+				lock.writeLock().lock();
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) { // what am i computing
+																								// lol?
+		// ReadWriteLock lock = getLock(key);
+		// lock.readLock().unlock();
+		// lock.writeLock().unlock();
+		// remappingFunction = (key,(k,v) ->{
+		// });
+		// lock.writeLock().lock();
+		// lock.readLock().lock();
 		throw new NotYetImplementedException();
 	}
 
